@@ -1,0 +1,17 @@
+<ActorFrame> <children>
+	<Layer Type="ActorFrame" OnCommand="x,65;y,-97"> <children>
+		<Layer Type="BitmapText" Font="_misoreg white" Text="FANTASTIC"	OnCommand="%function(self) CONSTMELODY.Evaluation.SetColorFromText(self,0); end"  />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="EXCELLENT"	OnCommand="%function(self) CONSTMELODY.Evaluation.SetColorFromText(self,1); end"  />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="GREAT"		OnCommand="%function(self) CONSTMELODY.Evaluation.SetColorFromText(self,2); end"  />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="DECENT"	OnCommand="%function(self) CONSTMELODY.Evaluation.SetColorFromText(self,3); end"  InitCommand="%function(self) if not Decents() then self:diffuse(.5,.5,.5,.5) end end" />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="WAY OFF"	OnCommand="%function(self) CONSTMELODY.Evaluation.SetColorFromText(self,4); end"  InitCommand="%function(self) if not WayOffs() then self:diffuse(.5,.5,.5,.5) end end" />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="MISS"		OnCommand="%function(self) CONSTMELODY.Evaluation.SetColorFromText(self,5); end"  />
+	</children> </Layer>
+	<Layer Type="ActorFrame" OnCommand="x,-110;y,-97"> <children>
+		<Layer Type="BitmapText" Font="_misoreg white" Text="holds"		OnCommand="y,27*2;zoom,0.35;horizalign,right;ShadowLength,0" />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="mines"		OnCommand="y,27*3;zoom,0.35;horizalign,right;ShadowLength,0" />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="hooves"	OnCommand="y,27*4;zoom,0.35;horizalign,right;ShadowLength,0" />
+		<Layer Type="BitmapText" Font="_misoreg white" Text="lols"		OnCommand="y,27*5;zoom,0.35;horizalign,right;ShadowLength,0" />
+	</children> </Layer>
+</children> </ActorFrame>
+

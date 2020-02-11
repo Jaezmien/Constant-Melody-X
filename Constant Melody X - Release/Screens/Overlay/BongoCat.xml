@@ -1,0 +1,89 @@
+<ActorFrame Condition="CONSTMELODY.MinimumVersion('V4')"><children>
+
+    <Layer
+        Type="Quad"
+        InitCommand="hidden,1"
+        OverlayReadyMessageCommand="%function(self)
+            local s = self
+            stitch('lua.event').Persist('new screen','bongo',function(os,ns)
+                if CONSTMELODY.Gameplay.BongoCat then
+                    if ns == 'ScreenGameplay' then
+                        s:GetParent():playcommand('Enter')
+                    end
+                    if os == 'ScreenGameplay' then
+                        s:GetParent():playcommand('Exit')
+                    end
+                end
+            end)
+            CONSTMELODY.Gameplay.BongoCatInput = {{0,0,0,0},{0,0,0,0}}
+        end"
+    />
+
+    <Layer
+        File="@THEME:GetPath(2,'_CarnageRogue','cat')"
+        Name="Cat P1"
+        InitCommand="hidden,1;x,SCREEN_WIDTH*0.25;y,SCREEN_HEIGHT + SCREEN_CENTER_Y;animate,0;zoom,0.5;basezoomx,-1;diffusealpha,0.2"
+        EnterCommand="hidden,0;bounceend,1;y,SCREEN_CENTER_Y+160"
+        ExitCommand="bouncebegin,1;y,SCREEN_HEIGHT + SCREEN_CENTER_Y;queuecommand,Hide"
+        HideCommand="hidden,1"
+    />
+
+    <Layer
+        File="@THEME:GetPath(2,'_CarnageRogue','cat')"
+        Name="Cat P2"
+        InitCommand="hidden,1;x,SCREEN_WIDTH*0.75;y,SCREEN_HEIGHT + SCREEN_CENTER_Y;animate,0;zoom,0.5;diffusealpha,0.2"
+        EnterCommand="hidden,0;bounceend,1;y,SCREEN_CENTER_Y+160"
+        ExitCommand="bouncebegin,1;y,SCREEN_HEIGHT + SCREEN_CENTER_Y;queuecommand,Hide"
+        HideCommand="hidden,1"
+    />
+
+    <Layer
+        Type="Quad"
+        InitCommand="zoom,0"
+
+        StepP1LeftPressMessageCommand="%function(self)  CONSTMELODY.Gameplay.BongoCatInput[1][1] = 1 end"
+        StepP1LeftLiftMessageCommand="%function(self)   CONSTMELODY.Gameplay.BongoCatInput[1][1] = 0 end"
+        StepP1DownPressMessageCommand="%function(self)  CONSTMELODY.Gameplay.BongoCatInput[1][2] = 1 end"
+        StepP1DownLiftMessageCommand="%function(self)   CONSTMELODY.Gameplay.BongoCatInput[1][2] = 0 end"
+        StepP1UpPressMessageCommand="%function(self)    CONSTMELODY.Gameplay.BongoCatInput[1][3] = 1 end"
+        StepP1UpLiftMessageCommand="%function(self)     CONSTMELODY.Gameplay.BongoCatInput[1][3] = 0 end"
+        StepP1RightPressMessageCommand="%function(self) CONSTMELODY.Gameplay.BongoCatInput[1][4] = 1 end"
+        StepP1RightLiftMessageCommand="%function(self)  CONSTMELODY.Gameplay.BongoCatInput[1][4] = 0 end"
+
+        StepP2LeftPressMessageCommand="%function(self)  CONSTMELODY.Gameplay.BongoCatInput[2][1] = 1 end"
+        StepP2LeftLiftMessageCommand="%function(self)   CONSTMELODY.Gameplay.BongoCatInput[2][1] = 0 end"
+        StepP2DownPressMessageCommand="%function(self)  CONSTMELODY.Gameplay.BongoCatInput[2][2] = 1 end"
+        StepP2DownLiftMessageCommand="%function(self)   CONSTMELODY.Gameplay.BongoCatInput[2][2] = 0 end"
+        StepP2UpPressMessageCommand="%function(self)    CONSTMELODY.Gameplay.BongoCatInput[2][3] = 1 end"
+        StepP2UpLiftMessageCommand="%function(self)     CONSTMELODY.Gameplay.BongoCatInput[2][3] = 0 end"
+        StepP2RightPressMessageCommand="%function(self) CONSTMELODY.Gameplay.BongoCatInput[2][4] = 1 end"
+        StepP2RightLiftMessageCommand="%function(self)  CONSTMELODY.Gameplay.BongoCatInput[2][4] = 0 end"
+        
+        OverlayReadyMessageCommand="luaeffect,Update"
+        UpdateCommand="%function(self)
+            if not FUCK_EXE then self:hidden(1); return end
+            local input = {{0,0},{0,0}}
+
+            local raw_input = CONSTMELODY.Gameplay.BongoCatInput
+            for pn=1,2 do
+                if raw_input[pn][1] == 1 or raw_input[pn][2] == 1 then
+                    input[pn][1] = 1
+                end
+                if raw_input[pn][3] == 1 or raw_input[pn][4] == 1 then
+                    input[pn][2] = 1
+                end
+            end
+            input[1][1],input[1][2] = input[1][2],input[1][1] -- swap input for p1
+
+            for pn=1,2 do
+                local wh = 1
+                    if input[pn][1] == 1 and input[pn][2] == 0 then wh = 0
+                elseif input[pn][1] == 0 and input[pn][2] == 1 then wh = 2
+                elseif input[pn][1] == 1 and input[pn][2] == 1 then wh = 3 end
+
+                self:GetParent():GetChild('Cat P'..pn):setstate(wh)
+            end
+        end"
+    />
+
+</children></ActorFrame>

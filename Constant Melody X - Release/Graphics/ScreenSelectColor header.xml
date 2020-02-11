@@ -1,0 +1,14 @@
+<ActorFrame> <children>
+	<!--<Layer Type="Quad" Command="diffuse,#FFFFFF00;stretchto,SCREEN_LEFT,SCREEN_TOP+32,SCREEN_RIGHT,SCREEN_TOP;linear,.5;diffuse,#FFFFFFA0"/>	
+	<Layer
+		Type="BitmapText"
+		Text="SELECT PONY"
+		File="_wendy white"
+		InitCommand="diffuse,#FFFFFF00;zoom,.4;shadowlength,0;horizalign,left;x,15;y,16"
+		OnCommand="linear,.5;diffusealpha,1"
+	/>-->
+	<Layer
+		Type="BitmapText" Font="_woodrow" Text="Select a Pony!" InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-180;shadowlength,1;diffusealpha,0;decelerate,0.4;diffusealpha,1"
+		OffCommand="decelerate,0.4;diffusealpha,0"
+	/>
+</children> </ActorFrame>

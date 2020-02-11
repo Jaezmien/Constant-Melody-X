@@ -1,0 +1,27 @@
+<!-- <ActorFrame><children></children></ActorFrame> -->
+<ActorFrame 
+    OnCommand="effectperiod,0/1;luaeffect,Update"
+    UpdateCommand="%function(self)
+        stitch('lua.event').Update(self)
+    end"
+    OverlayReadyMessageCommand="%function(self)
+        stitch.RequireEnv('lua.setup', {self = self})
+    end"
+><children>
+        <!-- Feel free to add more overlays here -->
+        <Layer File="Aft" />
+        
+        <Layer File="BongoCat"/>
+        <Layer File="ViewGC" />
+		
+        <Layer File="Death" />
+        <Layer File="Fail"/>
+        
+        <Layer File="Console"/>
+        
+        <Layer File="Pause"/>
+
+        <Layer File="Scripts"/>
+    </children>
+	
+</ActorFrame>

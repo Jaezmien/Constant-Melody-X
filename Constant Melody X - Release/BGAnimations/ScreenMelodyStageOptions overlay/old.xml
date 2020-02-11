@@ -1,0 +1,210 @@
+<ActorFrame><children>
+	<Layer Type="Quad" Command="diffuse,#FFFFFFA0;stretchto,SCREEN_LEFT,SCREEN_BOTTOM-24,SCREEN_RIGHT,SCREEN_BOTTOM;linear,.5;diffuse,#FFFFFF00"/>	
+	<Layer Type="Quad" Command="diffuse,#FFFFFFA0;stretchto,SCREEN_LEFT,SCREEN_TOP+32,SCREEN_RIGHT,SCREEN_TOP;linear,.5;diffuse,#FFFFFF00"/>	
+	<Actor
+		File="../ScreenWithMenuElements underlay"
+	/>
+
+	<!--[ THIS WAS A TEDIOUS TASK BUT IT'S FLUFFING WORTH IT <3 ]-->
+	<ActorFrame InitCommand="%function(self)
+		MELODY_VARIABLES.GameplayLoading = {}
+		local a = MELODY_VARIABLES.GameplayLoading
+		a.CurrState = 0
+		a.Stop = false
+		self:zoom(0.2)
+		self:xy(SCREEN_CENTER_X+190,SCREEN_CENTER_Y-128)
+		_G['mods'] = nil
+	end"
+	><children>	
+		<ActorFrame InitCommand="zoomy,0;zoomx,3;diffusealpha,1" OnCommand="decelerate,0.4;zoomy,1;zoomx,1"><children>
+			<Actor
+				File="fluttershy.sprite" OffCommand="animate,0"
+				StepStartP1PressMessageCommand="%function(self) self:finishtweening() SCREENMAN:SetNewScreen('ScreenGameplayBranch') end"
+				StepStartP2PressMessageCommand="%function(self) self:finishtweening() SCREENMAN:SetNewScreen('ScreenGameplayBranch') end"
+				StepP1Action6PressMessageCommand="%function(self) self:finishtweening() SCREENMAN:SetNewScreen('ScreenGameplayBranch') end"
+				StepP1Action3PressMessageCommand="sleep,0.02;queuecommand,SPA"
+				SPACommand="%function(self) self:finishtweening() SCREENMAN:SetNewScreen('ScreenGameplayBranch') end"
+			/>
+		</children></ActorFrame>
+		<BitmapText
+			Font="_equestria" Text="Press Enter/V To Play!"
+			InitCommand="%function(self)
+				local r,g,b,a = ColorRGB()
+				self:diffuse(r,g,b,0)
+				self:cmd('y,'..SCREEN_CENTER_Y+80 ..';zoom,2')
+			end"
+			OnCommand="playcommand,Flash"
+			FlashCommand="linear,1;diffusealpha,1;linear,1;diffusealpha,0;queuecommand,Flash"
+		/>
+	</children></ActorFrame>
+
+	<ActorFrame InitCommand="x,SCREEN_CENTER_X+190;y,SCREEN_CENTER_Y+32;zoom,0.4"><children>
+		<BitmapText
+			Font="_eurostile normal" InitCommand="halign,0"
+			Text="[Stuffs you can do]"
+		/>
+		<BitmapText
+			Font="_eurostile normal" InitCommand="halign,0;y,32*1"
+			Text="Z = ArrowPath mod"
+		/>
+		<BitmapText
+			Font="_eurostile normal" InitCommand="halign,0;y,32*2"
+			Text="X = Tick on Press"
+		/>
+		<BitmapText
+			Font="_eurostile normal" InitCommand="halign,0;y,32*3"
+			Text="C = Force-show Life/Score (Experimental)"
+		/>
+		<BitmapText
+			Font="_eurostile normal" InitCommand="halign,0;y,32*4"
+			Text="B = Bongo Cat (Experimental)"
+		/>
+		<BitmapText
+			Font="_eurostile normal" InitCommand="halign,0;y,32*5"
+			Text="N = Bongo Cat VS (Experimental)"
+		/>
+		<BitmapText
+			Font="_eurostile normal" InitCommand="halign,0;y,32*6"
+			Text="M = Fake Friend"
+		/>
+	</children></ActorFrame>
+
+	<!--[ Playfield ]-->
+	<ActorFrame InitCommand="xy,SCREEN_WIDTH*0.25+64,SCREEN_CENTER_Y-125"><children>
+		<A
+			Type="Quad" InitCommand="zoomto,1,SCREEN_HEIGHT*2;x,-96"
+			OnCommand="%function(self)
+				local a = MELODY_VARIABLES.Gameplay
+				if a.EnableArrowPath then
+					self:hidden(0)
+				else
+					self:hidden(1)
+				end
+			end"
+			MELODYTHEMEGAMEPLAYLOADINGAPGreenMessageCommand="hidden,0"
+			MELODYTHEMEGAMEPLAYLOADINGAPRedMessageCommand="hidden,1"
+		/>
+		<A
+			Type="Quad" InitCommand="zoomto,1,SCREEN_HEIGHT*2;x,-32"
+			OnCommand="%function(self)
+				local a = MELODY_VARIABLES.Gameplay
+				if a.EnableArrowPath then
+					self:hidden(0)
+				else
+					self:hidden(1)
+				end
+			end"
+			MELODYTHEMEGAMEPLAYLOADINGAPGreenMessageCommand="hidden,0"
+			MELODYTHEMEGAMEPLAYLOADINGAPRedMessageCommand="hidden,1"
+		/>
+		<A
+			Type="Quad" InitCommand="zoomto,1,SCREEN_HEIGHT*2;x,32"
+			OnCommand="%function(self)
+				local a = MELODY_VARIABLES.Gameplay
+				if a.EnableArrowPath then
+					self:hidden(0)
+				else
+					self:hidden(1)
+				end
+			end"
+			MELODYTHEMEGAMEPLAYLOADINGAPGreenMessageCommand="hidden,0"
+			MELODYTHEMEGAMEPLAYLOADINGAPRedMessageCommand="hidden,1"
+		/>
+		<A
+			Type="Quad" InitCommand="zoomto,1,SCREEN_HEIGHT*2;x,96"
+			OnCommand="%function(self)
+				local a = MELODY_VARIABLES.Gameplay
+				if a.EnableArrowPath then
+					self:hidden(0)
+				else
+					self:hidden(1)
+				end
+			end"
+			MELODYTHEMEGAMEPLAYLOADINGAPGreenMessageCommand="hidden,0"
+			MELODYTHEMEGAMEPLAYLOADINGAPRedMessageCommand="hidden,1"
+		/>
+		<Z
+			Type="Sprite" Texture="receptor"
+			Frame0000="0" Delay0000="0.95" Frame0000="1" Delay0000="1" Frame0000="2" Delay0000="1" Frame0000="3" Delay0000="1" Frame0000="0" Delay0000="0.05"
+			InitCommand="EffectClock,beat;DiffuseRamp;EffectColor1,0.4,0.4,0.4,1;EffectColor2,1,1,1,1,1;effectperiod,0.5;EffectDelay,0.5;EffectOffset,0.05;x,-96;zoom,0.5;rotationz,90"
+		/>
+		<Z
+			Type="Sprite" Texture="receptor"
+			Frame0000="0" Delay0000="0.95" Frame0000="1" Delay0000="1" Frame0000="2" Delay0000="1" Frame0000="3" Delay0000="1" Frame0000="0" Delay0000="0.05"
+			InitCommand="EffectClock,beat;DiffuseRamp;EffectColor1,0.4,0.4,0.4,1;EffectColor2,1,1,1,1,1;effectperiod,0.5;EffectDelay,0.5;EffectOffset,0.05;x,-32;zoom,0.5"
+		/>
+		<Z
+			Type="Sprite" Texture="receptor"
+			Frame0000="0" Delay0000="0.95" Frame0000="1" Delay0000="1" Frame0000="2" Delay0000="1" Frame0000="3" Delay0000="1" Frame0000="0" Delay0000="0.05"
+			InitCommand="EffectClock,beat;DiffuseRamp;EffectColor1,0.4,0.4,0.4,1;EffectColor2,1,1,1,1,1;effectperiod,0.5;EffectDelay,0.5;EffectOffset,0.05;x,32;zoom,0.5;rotationz,180"
+		/>
+		<Z
+			Type="Sprite" Texture="receptor"
+			Frame0000="0" Delay0000="0.95" Frame0000="1" Delay0000="1" Frame0000="2" Delay0000="1" Frame0000="3" Delay0000="1" Frame0000="0" Delay0000="0.05"
+			InitCommand="EffectClock,beat;DiffuseRamp;EffectColor1,0.4,0.4,0.4,1;EffectColor2,1,1,1,1,1;effectperiod,0.5;EffectDelay,0.5;EffectOffset,0.05;x,96;zoom,0.5;rotationz,-90"
+		/>
+	</children></ActorFrame>
+
+	<Dong
+		Type="Quad" InitCommand="hidden,1"
+		StepP1Action1PressMessageCommand="%function(self)
+			local a = MELODY_VARIABLES.Gameplay
+			if a.EnableArrowPath then
+				MESSAGEMAN:Broadcast('MELODYTHEMEGAMEPLAYLOADINGAPRed')
+			else
+				MESSAGEMAN:Broadcast('MELODYTHEMEGAMEPLAYLOADINGAPGreen')
+			end
+			a.EnableArrowPath = not a.EnableArrowPath
+		end"
+		StepP1Action2PressMessageCommand="%function(self)
+			local a = MELODY_VARIABLES.Gameplay
+			if a.EnablePressTick then
+				SCREENMAN:SystemMessage('Disabled Press Tick!')
+			else
+				SCREENMAN:SystemMessage('Enabled Press Tick!')
+			end
+			a.EnablePressTick = not a.EnablePressTick
+		end"
+		StepP1Action5PressMessageCommand="%function(self)
+			local a = MELODY_VARIABLES.Gameplay
+			if a.ForceShowLifeScore then
+				SCREENMAN:SystemMessage('Not force-showing life score!')
+			else
+				SCREENMAN:SystemMessage('Force-showing life score!')
+			end
+			a.ForceShowLifeScore = not a.ForceShowLifeScore
+		end"
+		StepP1Action7PressMessageCommand="%function(self)
+			local a = MELODY_VARIABLES.Gameplay
+			if a.BongoCat then
+				SCREENMAN:SystemMessage('Disabled Bongo Cat!')
+			else
+				SCREENMAN:SystemMessage('Enabled Bongo Cat!')
+			end
+			a.BongoCat = not a.BongoCat
+		end"
+		StepP1Action3PressMessageCommand="%function(self)
+			MELODY_VARIABLES.Gameplay.BongoCat = true
+			MELODY_VARIABLES.Gameplay.BongoCatMP = true
+		end"
+		StepP1Action4PressMessageCommand="%function(self)
+			local a = MELODY_VARIABLES.Gameplay
+			if a.FakeFriend then
+				SCREENMAN:SystemMessage('you friend left :(')
+			else
+				SCREENMAN:SystemMessage('i bought a fren for you!')
+			end
+			a.FakeFriend = not a.FakeFriend
+		end"
+	/>
+
+	<!--[
+		Playfield requested by BlueGuy
+	]-->
+
+	<Actor
+		Condition="GAMESTATE:IsCourseMode()"
+		File="../../Graphics/ScreenGameplay course song 1"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;diffusealpha,0;accelerate,0.3;diffusealpha,1"
+	/>
+</children></ActorFrame>

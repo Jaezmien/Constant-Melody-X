@@ -1,0 +1,119 @@
+<ActorFrame><children>
+
+    <Layer
+        Type="Quad" InitCommand="hidden,1"
+        OnCommand="%function(self)
+            CONSTMELODY.Gameplay.Failed = {false,false}
+            if not FUCK_EXE then CONSTMELODY.Gameplay.HasHealthUpdated = {nil,nil} end
+            self:queuecommand('Update')
+        end"
+        UpdateCommand="%function(self)
+            
+            if CONSTMELODY.Gameplay.Failed[1] and CONSTMELODY.Gameplay.Failed[2] then return end
+
+            --
+            for i=1,2 do
+                if not CONSTMELODY.Gameplay.Failed[i] then
+                    -- why did i separate these two again?
+                    -- actually forget it
+                    -- why did i make this in the first place?
+                    if FUCK_EXE then
+                        local life = SCREENMAN:GetTopScreen():GetLife(i-1)
+                        if life and life == 0 then
+                            CONSTMELODY.Gameplay.Failed[i] = true
+                            MESSAGEMAN:Broadcast('XFailP'..i)
+                            if CONSTMELODY.Gameplay.Failed[3-i] then
+                                MESSAGEMAN:Broadcast('XFailBoth')
+                            end
+                        end
+                    else
+                        -- damb thing: getcurrentlife only updates first after the result of first arrow
+                        local life = STATSMAN:GetCurStageStats():GetPlayerStageStats(i-1):GetCurrentLife()
+                        -- and thus we check if it has updated its value once
+                        if life ~= 0 and not CONSTMELODY.Gameplay.HasHealthUpdated[i] then
+                            CONSTMELODY.Gameplay.HasHealthUpdated[i] = true -- and start updating if so!
+                        end
+                        if CONSTMELODY.Gameplay.HasHealthUpdated[i] then
+                            if life and life == 0 then
+                                CONSTMELODY.Gameplay.Failed[i] = true
+                                MESSAGEMAN:Broadcast('XFailP'..i)
+                                SOUND:PlayOnce( THEME:GetPath(4,'MelodyDead','squee') )
+                                if CONSTMELODY.Gameplay.Failed[3-i] then
+                                    SCREENMAN:SystemMessage('Both players failed')
+                                else
+                                    SCREENMAN:SystemMessage('Player '.. i .. ' failed')
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            --
+
+            self:sleep(0.02)
+            self:queuecommand('Update')
+        end"
+
+    />
+    <Layer
+        Condition="CONSTMELODY.MinimumVersion('V3')"
+        File="@THEME:GetPath(4,'MelodyDead','squee')"
+        InitCommand="%function(self) self:get():pan(-1) end"
+        XFailP1MessageCommand="%function(self)
+            if CONSTMELODY.Profile.Get().Options_DefaultFail then return end
+            self:queuecommand('Fail')
+        end"
+        FailCommand="stop;start"
+    />
+    <Layer
+        Condition="CONSTMELODY.MinimumVersion('V3')"
+        File="@THEME:GetPath(4,'MelodyDead','squee')"
+        InitCommand="%function(self) self:get():pan(1) end"
+        XFailP2MessageCommand="%function(self)
+            if CONSTMELODY.Profile.Get().Options_DefaultFail then return end
+            self:queuecommand('Fail')
+        end"
+        FailCommand="stop;start"
+    />
+
+    <Layer Type="ActorFrame" Condition="not FUCK_EXE"><children>
+
+        <!-- we can't get screen names in OpenITG, thus this is separated. -->
+
+        <Layer
+            Type="Quad"
+            InitCommand="horizalign,left;vertalign,bottom;x,0;y,SCREEN_HEIGHT+30;zoomto,75,30;diffuse,0,0,0,0.4"
+            ResetCommand="hidden,1;y,SCREEN_HEIGHT+30;diffusealpha,0.8"
+            FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+            XFailP1MessageCommand= "hidden,0;decelerate,1;y,SCREEN_HEIGHT"
+        />
+        <Layer
+            Type="BitmapText"
+            Font="_equestria"
+            Text="Failed"
+            InitCommand="horizalign,left;vertalign,bottom;x,5;y,SCREEN_HEIGHT+20;zoom,0.8;diffuse,1,0,0,1;shadowlength,2"
+            ResetCommand="hidden,1;y,SCREEN_HEIGHT+20;diffusealpha,1"
+            FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+            XFailP1MessageCommand="hidden,0;decelerate,1;y,SCREEN_HEIGHT-5"
+        />
+
+        <Layer
+            Type="Quad"
+            InitCommand="horizalign,right;vertalign,bottom;x,SCREEN_WIDTH;y,SCREEN_HEIGHT+30;zoomto,75,30;diffuse,0,0,0,0.4"
+            ResetCommand="hidden,1;y,SCREEN_HEIGHT+30;diffusealpha,0.8"
+            FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+            XFailP2MessageCommand="hidden,0;decelerate,1;y,SCREEN_HEIGHT"
+        />
+        <Layer
+            Type="BitmapText"
+            Font="_equestria"
+            Text="Failed"
+            InitCommand="horizalign,right;vertalign,bottom;x,SCREEN_WIDTH-5;y,SCREEN_HEIGHT+20;zoom,0.8;diffuse,1,0,0,1;shadowlength,2"
+            ResetCommand="hidden,1;y,SCREEN_HEIGHT+20;diffusealpha,1"
+            FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+            XFailP2MessageCommand="hidden,0;decelerate,1;y,SCREEN_HEIGHT-5"
+        />
+        
+    </children></Layer>
+
+</children></ActorFrame>

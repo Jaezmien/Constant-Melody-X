@@ -1,0 +1,9 @@
+<ActorFrame> <children>
+
+	<ActorFrame Command="%function() love = 1 end" />
+	<Layer
+		File="@THEME:GetPath(2,'Melody','SimplyLove (doubleres)')" 
+		OnCommand="draworder,301;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,1/(CONSTMELODY.MinimumVersion('V2') and 1 or 2);diffusealpha,0;linear,0.4;diffusealpha,1" 
+	/>
+
+</children></ActorFrame>

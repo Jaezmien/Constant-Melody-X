@@ -1,0 +1,32 @@
+<ActorFrame Type="ActorFrame"
+    InnerOnCommand="%function(self)
+        self:draworder(-1)
+        self:queuecommand('GlobalClock')
+    end"
+    GlobalClockMessageCommand="%function(self) if not GlobalClock then GlobalClock = self; self:effectperiod(1000000) end end"
+><children>
+    <Quad
+        Condition="not CONSTMELODY.MinimumVersion('V3')"
+        InitCommand="zoomtowidth,SCREEN_WIDTH;zoomtoheight,40;diffusebottomedge,0,0,0,1"
+
+        InnerOnCommand="finishtweening;x,SCREEN_CENTER_X;y,SCREEN_TOP+80;diffusealpha,0;linear,0.5;diffusealpha,0.5;queuecommand,SelfOff"
+        SelfOffCommand="sleep,5;linear,0.5;diffusealpha,0"
+    />
+    <Polygon
+        Condition="CONSTMELODY.MinimumVersion('V3')"
+        InitCommand="%function(self)
+            self:SetDrawMode('quads');
+            self:SetNumVertices(4)
+            -- which vertex, x, y, z | self:SetVertexPosition(0,-32,32,0)
+            self:SetVertexPosition(0,-SCREEN_CENTER_X*1.4,-40,0)
+            self:SetVertexPosition(1,-SCREEN_CENTER_X*1.4,40,0)
+            self:SetVertexPosition(2,SCREEN_CENTER_X*1.4,40,0)
+            self:SetVertexPosition(3,SCREEN_CENTER_X*1.4,-40,0)
+            local r,g,b,a = ColorRGB(1,true)
+            self:cmd('zoomto,0,0;diffuse,'..r..','..g..','..b..',1')
+        end"
+
+        InnerOnCommand="finishtweening;zoomto,0,1;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;diffusealpha,0;rotationz,-3;decelerate,1;rotationz,-2;zoomto,1,1;diffusealpha,0.9;queuecommand,SelfOff"
+        SelfOffCommand="linear,1;rotationz,2;decelerate,0.5;diffusealpha,0;rotationz,3"
+    />
+</children></ActorFrame>

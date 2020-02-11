@@ -1,0 +1,39 @@
+<ActorFrame> <children>
+	<ActorFrame
+		OnCommand="%function(self)
+			if CONSTMELODY.MinimumVersion('V3') then
+				self:y(-32)
+				self:tween(1,'inOutCubic(%f,0,1,1)')
+				self:y(0)
+			else
+				self:y(-32)
+				self:accelerate(0.5)
+				self:y(-32/2)
+				self:decelerate(0.5)
+				self:y(0)
+			end
+		end"
+		OffCommand="%function(self)
+			if CONSTMELODY.MinimumVersion('V3') then
+				self:y(0)
+				self:tween(1,'inOutCubic(%f,0,1,1)')
+				self:y(-32)
+			else
+				self:y(0)
+				self:accelerate(0.5)
+				self:y(-32/2)
+				self:decelerate(0.5)
+				self:y(-32)
+			end
+		end"
+	><children>
+		<Layer File="ScreenWithMenuElements header"/>	
+		<Layer
+			Type="BitmapText"
+			Text="SERVICE OPTIONS"
+			File="_wendy white"
+			OnCommand="diffuse,#FFFFFF;zoom,.4;shadowlength,0;horizalign,left;x,15;y,16"
+			OffCommand="linear,0.2;diffusealpha,0"
+		/>
+	</children> </ActorFrame>
+</children> </ActorFrame>

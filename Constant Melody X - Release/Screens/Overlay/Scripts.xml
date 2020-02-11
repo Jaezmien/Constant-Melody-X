@@ -1,0 +1,86 @@
+<ActorFrame><children>
+
+    <Layer
+        Type="Quad"
+        Name="Screen Change"
+        Condition="FUCK_EXE"
+        OverlayReadyMessageCommand="queuecommand,First"
+        FirstCommand="%function(self)
+            if CONSTMELODY.Overlay.Last_Seen_Screen ~= '' then return end
+            CONSTMELODY.Overlay.Last_Seen_Screen = 'Initialize' -- overlay is a pain
+            self:luaeffect('Update')
+        end"
+        UpdateCommand="%function(self)
+            if CONSTMELODY.Overlay.Last_Seen_Screen ~= SCREENMAN:GetTopScreen():GetName() then
+                stitch('lua.event').Call('new screen',CONSTMELODY.Overlay.Last_Seen_Screen,SCREENMAN:GetTopScreen():GetName())
+                CONSTMELODY.Overlay.Last_Seen_Screen = SCREENMAN:GetTopScreen():GetName()
+            end
+        end"
+    />
+
+    <Layer
+        Type="Quad"
+        Name="External Handler Timer"
+        Condition="CONSTMELODY.MinimumVersion('V3')"
+        OverlayReadyMessageCommand="queuecommand,First"
+        FirstCommand="%function(self)
+            if not External.initialized then
+                External.timer = self
+                External:initialize()
+                External.initialized = true
+            end
+        end"
+        StartTimerCommand="%function(self)
+            self:sleep(1/2)
+            self:queuecommand('Check')
+        end"
+        CheckCommand="%function(self)
+        
+            if External:check_write() then
+                Debug('[External Handler] '.. GAMESTATE:GetExternal(59)..' took too long to read, clearing.')
+                External.last_seen_write = nil
+                External:clear_write()
+            end
+
+        end"
+    />
+    <Layer
+        Type="Quad"
+        Name="External Handler Updater"
+        Condition="CONSTMELODY.MinimumVersion('V3')"
+        OverlayReadyMessageCommand="queuecommand,First"
+        FirstCommand="luaeffect,Tick"
+        TickCommand="%function(self)
+            External:tick()
+        end"
+    />
+
+    <Layer
+        Type="Quad"
+        Name="Discord RPC"
+        Condition="CONSTMELODY.MinimumVersion('V3')"
+        OverlayReadyMessageCommand="queuecommand,First"
+        FirstCommand="%function(self)
+            if DISCORD_RPC then DISCORD_RPC=nil; return end DISCORD_RPC = true; -- idk it runs twice for some reason
+            local event = stitch('lua.event')
+
+            event.Persist('new screen','discord rpc',function(os,ns)
+                if not CONSTMELODY.RPC.Connected then return end
+                CONSTMELODY.RPC.UpdateScreen(ns)
+            end)
+            External:add_hook(1,'init',function(buffer)
+                if buffer[1] == 0 then
+                    if buffer[2] == 1 then
+                        CONSTMELODY.RPC.Connected = true
+                        print('Discord RPC Connected!')
+                        CONSTMELODY.RPC.UpdateScreen(SCREENMAN:GetTopScreen():GetName())
+                    elseif buffer[2] == 2 then
+                        CONSTMELODY.RPC.Connected = false
+                        print('Discord RPC Disconnected!')
+                    end
+                end
+            end)
+        end"
+    />
+
+</children></ActorFrame>

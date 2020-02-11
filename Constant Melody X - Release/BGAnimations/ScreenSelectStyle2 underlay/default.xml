@@ -1,0 +1,39 @@
+<ActorFrame><children>
+	<!--[[<Layer
+		Class="AutoActor" 
+		File="../_shared underlay arrows"
+		Command="%function() loadMusic = 1 end"
+	/>-->
+
+	<!--[[ Begin Pad ]]-->
+	<ActorFrame InitCommand="fov,40;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+20;rotationx,20"><children>
+
+		<!--[ Handler ]-->
+		<Layer File="pad/platform.model" InitCommand="x,-80"/>
+		<Layer File="pad/platform.model" InitCommand="x, 80"/>
+
+		<Layer Type="ActorFrame" InitCommand="x,-80"><children>
+			<Layer File="@THEME:GetPath(2,'ScreenSelectStyle2','luna')"
+				InitCommand="zoom,0.3;x,-8;y,4;z,0;vertalign,bottom;bounce;effectmagnitude,0,-20,0;effectperiod,1;effectclock,bgm"
+				MELODYTHEMESSS21PMessageCommand="decelerate,0.2;x,-8"
+				MELODYTHEMESSS22PMessageCommand="decelerate,0.2;x,-8"
+				 MELODYTHEMESSS2DMessageCommand="decelerate,0.2;x,80-8"
+			/>
+		</children></Layer>
+
+		<Layer Type="ActorFrame" InitCommand="x,80"><children>
+			<Layer File="@THEME:GetPath(2,'ScreenSelectStyle2','celestia')"
+				InitCommand="zoom,0.12;x,-22;y,10;z,-40;vertalign,bottom;bounce;effectmagnitude,0,-20,0;effectperiod,1;effectclock,bgm;effectoffset,1.5"
+				OnCommand="diffusealpha,0"
+				MELODYTHEMESSS2SetTo2PMessageCommand="diffusealpha,1"
+				MELODYTHEMESSS21PMessageCommand="decelerate,0.2;diffusealpha,0"
+				MELODYTHEMESSS22PMessageCommand="decelerate,0.2;diffusealpha,1"
+				 MELODYTHEMESSS2DMessageCommand="decelerate,0.2;diffusealpha,0"
+			/>
+		</children></Layer>
+
+	</children></ActorFrame>
+	<!--[[ End Pad ]]-->
+
+	<Layer Type="Quad" InitCommand="diffuse,0,0,0,0.8;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+145;zoomto,SCREEN_WIDTH,110"/>
+</children></ActorFrame>

@@ -1,0 +1,20 @@
+<ActorFrame	OnCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y"><children>
+	<ActorFrame Command="queuecommand,Set"
+		SetCommand="%function()
+			crazy = 0
+		end"
+	/>
+	<ActorFrame ><children>
+		<ActorFrame FOV="90" InitCommand="%function() CONSTMELODY.RandomBG = math.random(1,7) end"><children>
+			<!--[customtexturerect,0,0,1,1;texcoordvelocity,0.03,.02]-->
+			<A File="BG1/BG.xml" Condition="CONSTMELODY.RandomBG == 1"/>
+			<A File="BG2/BG.xml" Condition="CONSTMELODY.RandomBG == 2"/>
+			<A File="BG3/BG.xml" Condition="CONSTMELODY.RandomBG == 3"/>
+			<A File="BG4/BG.xml" Condition="CONSTMELODY.RandomBG == 4"/>
+			<A File="BG5/BG.xml" Condition="CONSTMELODY.RandomBG == 5"/>
+			<A File="BG6/BG.xml" Condition="CONSTMELODY.RandomBG == 6"/>
+			<A File="BG7/BG.xml" Condition="CONSTMELODY.RandomBG == 7"/>
+			<B Type="Quad" InitCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,0.4"/>
+		</children></ActorFrame>
+	</children></ActorFrame>
+</children></ActorFrame>

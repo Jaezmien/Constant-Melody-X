@@ -1,0 +1,47 @@
+<ActorFrame><children>
+	<Layer
+		File="../ScreenWithMenuElements underlay"
+	/>
+
+	<Layer
+		Type="Quad" InitCommand="zoom,9999;diffuse,0,0,0,1"
+	/>
+
+	<Layer
+		File="fluttershy.sprite" OffCommand="stoptweening;animate,0"
+		InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y*0.35;zoom,0.3"
+	/>
+	<Layer
+		Type="BitmapText"
+		Font="common normal"
+		Text="Press &START; to start!"
+		InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y*0.35;zoom,0.6;shadowlength,1;addy,75"
+	/>
+
+	<!-- -->
+
+	<Layer
+		Type="BitmapText"
+		Font="_equestria"
+		Text="- Fun Stuffs -"
+		InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y"
+	/>
+	<Layer
+		Type="BitmapText"
+		Font="_eurostile outline"
+		Text="[Action 1] - Bongo Cat"
+		InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoom,0.4;addy,40*1"
+		OnCommand="%function(self)
+			if CONSTMELODY.Gameplay.BongoCat then self:diffuse(0,1,0,1) end
+		end"
+		StepP1Action1PressMessageCommand="%function(self)
+			if not FUCK_EXE then
+				SCREENMAN:SystemMessage('NotITG is required for this!')
+				return
+			end
+			CONSTMELODY.Gameplay.BongoCat = not CONSTMELODY.Gameplay.BongoCat
+			if CONSTMELODY.Gameplay.BongoCat then self:diffuse(0,1,0,1) else self:diffuse(1,1,1,1) end
+		end"
+	/>
+
+</children></ActorFrame>

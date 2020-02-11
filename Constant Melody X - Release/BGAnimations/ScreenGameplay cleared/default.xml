@@ -1,0 +1,9 @@
+<ActorFrame><children>
+
+    <Layer
+        File="../_black"
+        InitCommand="zoom,9999"
+        Command="diffusealpha,0;linear,0.8;diffusealpha,1"
+    />
+
+</children></ActorFrame>

@@ -1,0 +1,80 @@
+<ActorFrame><children>
+	<Layer
+		Type="Quad"
+		InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			local r,g,b,a = ColorRGB()
+			self:zoomto(SCREEN_WIDTH,SCREEN_HEIGHT)
+			self:diffuse(r,g,b,1)
+			--
+			if not CONSTMELODY.MinimumVersion('V3') then
+                self:accelerate(0.5)
+				self:diffusealpha(0.5)
+				self:decelerate(0.5)
+            else
+				self:tween(1,'inOutExpo(%f,0,1,1)')
+			end
+			--
+			self:diffusealpha(0)
+		end"
+	/> <!-- Back -->
+	<Layer
+		Type="Quad"
+		InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:fadebottom(0.4)
+			self:vertalign('bottom')
+			self:zoomto(SCREEN_WIDTH,SCREEN_HEIGHT/2)
+			self:diffuse(0,0,0,1)
+			--
+			if not CONSTMELODY.MinimumVersion('V3') then
+                self:accelerate(1)
+            else
+				self:tween(1,'inCubic(%f,0,1,1)')
+			end
+			--
+			self:y(-SCREEN_CENTER_Y)
+		end"
+	/> <!-- Top -->
+	<Layer
+		Type="Quad"
+		InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:fadetop(0.4)
+			self:vertalign('top')
+			self:zoomto(SCREEN_WIDTH,SCREEN_HEIGHT/2)
+			self:diffuse(0,0,0,1)
+			--
+			if not CONSTMELODY.MinimumVersion('V3') then
+                self:accelerate(1)
+            else
+				self:tween(1,'inCubic(%f,0,1,1)')
+			end
+			--
+			self:y(SCREEN_HEIGHT + SCREEN_CENTER_Y)
+		end"
+	/> <!-- Bottom -->
+	<Layer
+		File="_loading temp"
+		InitCommand="%function(self)
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y)
+			self:zoom(1)
+			self:diffusealpha(1)
+			self:Load(CONSTMELODY.Pony.GetSpriteDir())
+			--
+			if not CONSTMELODY.MinimumVersion('V3') then
+                self:accelerate(1)
+            else
+				self:tween(1,'inCubic(%f,0,1,1)')
+			end
+			--
+			self:zoom(0)
+			self:diffusealpha(0)
+		end"
+	/> <!-- Cutie Mark -->
+
+</children></ActorFrame>

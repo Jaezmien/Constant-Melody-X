@@ -1,0 +1,82 @@
+<ActorFrame Name="WBRB"><children>
+
+	<!-- very jank! might break some files -->
+
+    <Layer
+        Type="Quad"
+		InitCommand="hidden,1"
+        Name="Controller"
+    />
+
+    <Layer Type="ActorFrameTexture"
+		Name="AFT"
+		OverlayReadyMessageCommand="%function(self)
+			
+			self:SetWidth( DISPLAY:GetDisplayWidth() );
+			self:SetHeight( DISPLAY:GetDisplayHeight() );
+			self:EnableDepthBuffer( false );
+			self:EnableAlphaBuffer( true );
+			self:EnableFloat( false );
+			self:EnablePreserveTexture( true );
+			
+			self:Create();
+
+			j_fail_wbrb = self;
+			
+			self:hidden(1)
+			
+		end"
+		StartFailCommand="%function(self)
+			self:hidden(0)
+            self:sleep(0.04)
+            self:queuecommand('h')
+		end" hCommand="hidden,1"
+	/>
+	
+	<Layer Type="Sprite" Texture="white" Frag="wbrb posterize.frag"
+		InitCommand="aux,0"
+		OverlayReadyMessageCommand="%function(self)
+			if not FUCK_EXE then return end
+			if self:getaux() == 1 then return end self:aux(1) -- this will bite me in the flank but i'll take the risk
+			self:SetTextureFiltering(true)
+			self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+			self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y);
+			self:sleep(0.01);
+			self:hidden(1)
+			self:queuecommand('Set');
+
+		end"
+		
+		SetCommand="%function(self)
+			self:SetTexture(j_fail_wbrb:GetTexture())
+			j_fail_wbrb = nil
+		end"
+		StartFailCommand="hidden,0;sleep,4;queuecommand,h"
+        hCommand="hidden,1"
+	/>
+
+    <Layer
+        File="wbrb big"
+        InitCommand="hidden,1;horizalign,left;vertalign,top"
+        OverlayReadyMessageCommand="%function(self)
+            self:zoomto( SCREEN_WIDTH, SCREEN_HEIGHT )
+			self:zoom( math.min(SCREEN_WIDTH / 640 , 1) )
+        end"
+        StartFailCommand="hidden,0;sleep,4;queuecommand,h"
+        hCommand="hidden,1"
+    />
+    <Layer
+        Type="ActorSound"
+        File="wbrb sfx"
+        StartFailCommand="stop;start"
+    />
+    <Layer
+        Type="Quad"
+		InitCommand="hidden,1"
+        StartFailCommand="%function(self) SCREENMAN:SetInputMode(2); SCREENMAN():PauseGame(true); self:sleep(4); self:queuecommand('Unpause') end"
+        UnpauseCommand="%function(self) SCREENMAN():PauseGame(false); SCREENMAN:SetInputMode(0); end"
+    />
+
+</children></ActorFrame>

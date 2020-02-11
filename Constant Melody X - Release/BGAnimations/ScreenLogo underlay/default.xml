@@ -1,0 +1,24 @@
+<ActorFrame> <children>
+	<ActorFrame Command="%function() love = 0 end" />
+
+	<Layer
+		File="Cow" 
+		InitCommand="%function(self)
+			if not FUCK_EXE then
+				self:Load(THEME:GetPath(2,'GameLogo','itg'))
+			else
+				local n = tonumber(GAMESTATE:GetVersionDate())
+				local v = 1
+				if n>=20170405 then v=v+1 end -- v2
+				if n>=20180617 then v=v+1 end -- v3
+				if n>=20180909 then v=v+1 end -- v3.1
+				if n>=20200112 then v=v+1 end -- v4
+				if n>=20200126 then v=v+1 end -- v4.1
+				if v<3 then self:Load(THEME:GetPath(2,'GameLogo','nitg'))
+				elseif v<4 then self:Load(THEME:GetPath(2,'GameLogo','nitg3'))
+				else self:Load(THEME:GetPath(2,'GameLogo','nitg4')) end
+			end
+		end"
+		OnCommand="draworder,301;zoom,.25;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;diffusealpha,0;linear,0.4;diffusealpha,1;bob;effectmagnitude,0,20,0" 
+	/>
+</children></ActorFrame>

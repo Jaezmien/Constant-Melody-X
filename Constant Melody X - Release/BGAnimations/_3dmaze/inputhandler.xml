@@ -1,0 +1,83 @@
+<ActorFrame><children>
+        <MelodyInput
+            Type="Aux"
+
+            StepP1LeftPressMessageCommand="%function(self)  PInput[1][1] = 1; end"
+            StepP1DownPressMessageCommand="%function(self)  PInput[1][2] = 1; end"
+            StepP1UpPressMessageCommand="%function(self)    PInput[1][3] = 1; end"
+            StepP1RightPressMessageCommand="%function(self) PInput[1][4] = 1; end"
+            StepP1LeftLiftMessageCommand="%function(self)   PInput[1][1] = 0; end"
+            StepP1DownLiftMessageCommand="%function(self)   PInput[1][2] = 0; end"
+            StepP1UpLiftMessageCommand="%function(self)     PInput[1][3] = 0; end"
+            StepP1RightLiftMessageCommand="%function(self)  PInput[1][4] = 0; end"
+
+            StepP2LeftPressMessageCommand="%function(self)  PInput[2][1] = 1; end"
+            StepP2DownPressMessageCommand="%function(self)  PInput[2][2] = 1; end"
+            StepP2UpPressMessageCommand="%function(self)    PInput[2][3] = 1; end"
+            StepP2RightPressMessageCommand="%function(self) PInput[2][4] = 1; end"
+            StepP2LeftLiftMessageCommand="%function(self)   PInput[2][1] = 0; end"
+            StepP2DownLiftMessageCommand="%function(self)   PInput[2][2] = 0; end"
+            StepP2UpLiftMessageCommand="%function(self)     PInput[2][3] = 0; end"
+            StepP2RightLiftMessageCommand="%function(self)  PInput[2][4] = 0; end"
+
+
+            StepP1Action1PressMessageCommand="%function(self) PAction[1][1] = 1 end"
+            StepP1Action2PressMessageCommand="%function(self) PAction[1][2] = 1 end"
+            StepP1Action3PressMessageCommand="%function(self) PAction[1][3] = 1 end"
+            StepP1Action4PressMessageCommand="%function(self) PAction[1][4] = 1 end"
+            StepP1Action5PressMessageCommand="%function(self) PAction[1][5] = 1 end"
+            StepP1Action6PressMessageCommand="%function(self) PAction[1][6] = 1 end"
+            StepP1Action7PressMessageCommand="%function(self) PAction[1][7] = 1 end"
+            StepP1Action8PressMessageCommand="%function(self) PAction[1][8] = 1 end"
+
+            StepP1Action1LiftMessageCommand="%function(self) PAction[1][1] = 0 end"
+            StepP1Action2LiftMessageCommand="%function(self) PAction[1][2] = 0 end"
+            StepP1Action3LiftMessageCommand="%function(self) PAction[1][3] = 0 end"
+            StepP1Action4LiftMessageCommand="%function(self) PAction[1][4] = 0 end"
+            StepP1Action5LiftMessageCommand="%function(self) PAction[1][5] = 0 end"
+            StepP1Action6LiftMessageCommand="%function(self) PAction[1][6] = 0 end"
+            StepP1Action7LiftMessageCommand="%function(self) PAction[1][7] = 0 end"
+            StepP1Action8LiftMessageCommand="%function(self) PAction[1][8] = 0 end"
+
+            StepP2Action1PressMessageCommand="%function(self) PAction[2][1] = 1 end"
+            StepP2Action2PressMessageCommand="%function(self) PAction[2][2] = 1 end"
+            StepP2Action3PressMessageCommand="%function(self) PAction[2][3] = 1 end"
+            StepP2Action4PressMessageCommand="%function(self) PAction[2][4] = 1 end"
+            StepP2Action5PressMessageCommand="%function(self) PAction[2][5] = 1 end"
+            StepP2Action6PressMessageCommand="%function(self) PAction[2][6] = 1 end"
+            StepP2Action7PressMessageCommand="%function(self) PAction[2][7] = 1 end"
+            StepP2Action8PressMessageCommand="%function(self) PAction[2][8] = 1 end"
+
+            StepP2Action1LiftMessageCommand="%function(self) PAction[2][1] = 0 end"
+            StepP2Action2LiftMessageCommand="%function(self) PAction[2][2] = 0 end"
+            StepP2Action3LiftMessageCommand="%function(self) PAction[2][3] = 0 end"
+            StepP2Action4LiftMessageCommand="%function(self) PAction[2][4] = 0 end"
+            StepP2Action5LiftMessageCommand="%function(self) PAction[2][5] = 0 end"
+            StepP2Action6LiftMessageCommand="%function(self) PAction[2][6] = 0 end"
+            StepP2Action7LiftMessageCommand="%function(self) PAction[2][7] = 0 end"
+            StepP2Action8LiftMessageCommand="%function(self) PAction[2][8] = 0 end"
+
+
+            Fk_P1_W1MessageCommand="%function(self) PJudgment[1][1] = PJudgment[1][1] + 1; MelodyHandler_onJudgment(1,1) end"
+            Fk_P1_W2MessageCommand="%function(self) PJudgment[1][2] = PJudgment[1][2] + 1; MelodyHandler_onJudgment(2,1) end"
+            Fk_P1_W3MessageCommand="%function(self) PJudgment[1][3] = PJudgment[1][3] + 1; MelodyHandler_onJudgment(3,1) end"
+            Fk_P1_W4MessageCommand="%function(self) PJudgment[1][4] = PJudgment[1][4] + 1; MelodyHandler_onJudgment(4,1) end"
+            Fk_P1_W5MessageCommand="%function(self) PJudgment[1][5] = PJudgment[1][5] + 1; MelodyHandler_onJudgment(5,1) end"
+            Fk_P1_W6MessageCommand="%function(self) PJudgment[1][6] = PJudgment[1][6] + 1; MelodyHandler_onJudgment(6,1) end"
+            Fk_P1_W7MessageCommand="%function(self) PJudgment[1][7] = PJudgment[1][7] + 1; MelodyHandler_onJudgment(7,1) end"
+            Fk_P1_W8MessageCommand="%function(self) PJudgment[1][8] = PJudgment[1][8] + 1; MelodyHandler_onJudgment(8,1) end"
+            
+            Fk_P2_W1MessageCommand="%function(self) PJudgment[2][1] = PJudgment[2][1] + 1; MelodyHandler_onJudgment(1,2) end"
+            Fk_P2_W2MessageCommand="%function(self) PJudgment[2][2] = PJudgment[2][2] + 1; MelodyHandler_onJudgment(2,2) end"
+            Fk_P2_W3MessageCommand="%function(self) PJudgment[2][3] = PJudgment[2][3] + 1; MelodyHandler_onJudgment(3,2) end"
+            Fk_P2_W4MessageCommand="%function(self) PJudgment[2][4] = PJudgment[2][4] + 1; MelodyHandler_onJudgment(4,2) end"
+            Fk_P2_W5MessageCommand="%function(self) PJudgment[2][5] = PJudgment[2][5] + 1; MelodyHandler_onJudgment(5,2) end"
+            Fk_P2_W6MessageCommand="%function(self) PJudgment[2][6] = PJudgment[2][6] + 1; MelodyHandler_onJudgment(6,2) end"
+            Fk_P2_W7MessageCommand="%function(self) PJudgment[2][7] = PJudgment[2][7] + 1; MelodyHandler_onJudgment(7,2) end"
+            Fk_P2_W8MessageCommand="%function(self) PJudgment[2][8] = PJudgment[2][8] + 1; MelodyHandler_onJudgment(8,2) end"
+
+            StepStartP1PressMessageCommand="%function(self) PGreenButton = 1 end"
+            StepStartP1LiftMessageCommand="%function(self) PGreenButton = 0 end"
+
+        />
+</children></ActorFrame>

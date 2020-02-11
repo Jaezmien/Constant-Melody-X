@@ -1,0 +1,48 @@
+<ActorFrame><children>
+	<Layer
+		Type="Quad"
+		OnCommand="%function()
+			if IsTimedSet() then
+			GAMESTATE:SetTemporaryEventMode(true)
+			end
+		end"
+	/>
+	<Layer
+		Type="Quad"
+		OnCommand="%function(self) maxClamp = 0; self:queuecommand('Increase') end"
+		IncreaseCommand="%function(self)
+			maxClamp = maxClamp + .05;
+			if maxClamp < 1 then 
+				self:sleep(.025)
+				self:queuecommand('Increase')
+				end
+			_G['Layer'] = 'noholds'
+		end"
+	/>
+	<Layer
+		Type="Quad"
+		InitCommand="diffuse,0,0,0,0.8;zoomto,SCREEN_WIDTH,175;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+20"
+	/>
+	<Layer
+		File="../_shared underlay arrows"
+		OnCommand="queuecommand,Load"
+	/>
+	<Layer
+		Type="BitmapText"
+		Font="_equestria"
+		Text="Derpy Hooves"
+		InitCommand="%function(self)
+			CONSTMELODY.Pony.TextFrame = self; end"
+			OnCommand="x,SCREEN_CENTER_X;y,SCREEN_HEIGHT*.67;shadowlength,1;queuecommand,Update"
+		UpdateCommand="%function(self)
+			--local r, g, b, a = ColorRGB(CONSTMELODY.Pony.Selected,true)
+			--self:diffuse(r,g,b,a)
+			--self:sleep(0.02)
+			--self:queuecommand('Update')
+		end"
+		OffCommand="%function(self)
+			CONSTMELODY.Pony(CONSTMELODY.Pony.Selected);
+			CONSTMELODY.Profile.Set()
+		end"
+	/>
+</children></ActorFrame>

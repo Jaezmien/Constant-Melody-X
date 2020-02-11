@@ -1,0 +1,5 @@
+<ActorFrame><children>
+	<!-- <Layer Condition="EvaluationNextScreen() ~= 'ScreenNameEntryTraditional'" File="_loading out" />
+	<Layer Condition="EvaluationNextScreen() == 'ScreenNameEntryTraditional'" File="_fade out" /> -->
+	<Layer File="_loading out"/>
+</children></ActorFrame>

@@ -1,0 +1,69 @@
+<ActorFrame Condition="CONSTMELODY.MinimumVersion('V4')"><children>
+
+    <Layer
+        Type="Quad"
+        InitCommand="hidden,1"
+        OverlayReadyMessageCommand="%function(self)
+            local s = self
+            stitch('lua.event').Persist('new screen','player fail',function(os,ns)
+                if ns == 'ScreenGameplay' then
+                    s:GetParent():playcommand('Reset')
+                end
+                if os == 'ScreenGameplay' or ns ~= 'ScreenGameplay' then
+                    s:GetParent():playcommand('Fade')
+                end
+            end)
+        end"
+    />
+
+    <Layer
+        Type="Quad"
+        InitCommand="horizalign,left;vertalign,bottom;x,0;y,SCREEN_HEIGHT+30;zoomto,75,30;diffuse,0,0,0,0.4"
+        ResetCommand="hidden,1;y,SCREEN_HEIGHT+30;diffusealpha,0.8"
+        FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+        XFailP1MessageCommand="%function(self)
+            if CONSTMELODY.Profile.Get().Options_DefaultFail then return end
+            self:queuecommand('Fail')
+        end"
+        FailCommand="hidden,0;decelerate,1;y,SCREEN_HEIGHT"
+    />
+    <Layer
+        Type="BitmapText"
+        Font="_equestria"
+        Text="Failed"
+        InitCommand="horizalign,left;vertalign,bottom;x,5;y,SCREEN_HEIGHT+20;zoom,0.8;diffuse,1,0,0,1;shadowlength,2"
+        ResetCommand="hidden,1;y,SCREEN_HEIGHT+20;diffusealpha,1"
+        FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+        XFailP1MessageCommand="%function(self)
+            if CONSTMELODY.Profile.Get().Options_DefaultFail then return end
+            self:queuecommand('Fail')
+        end"
+        FailCommand="hidden,0;decelerate,1;y,SCREEN_HEIGHT-5"
+    />
+
+    <Layer
+        Type="Quad"
+        InitCommand="horizalign,right;vertalign,bottom;x,SCREEN_WIDTH;y,SCREEN_HEIGHT+30;zoomto,75,30;diffuse,0,0,0,0.4"
+        ResetCommand="hidden,1;y,SCREEN_HEIGHT+30;diffusealpha,0.8"
+        FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+        XFailP2MessageCommand="%function(self)
+            if CONSTMELODY.Profile.Get().Options_DefaultFail then return end
+            self:queuecommand('Fail')
+        end"
+        FailCommand="hidden,0;decelerate,1;y,SCREEN_HEIGHT"
+    />
+    <Layer
+        Type="BitmapText"
+        Font="_equestria"
+        Text="Failed"
+        InitCommand="horizalign,right;vertalign,bottom;x,SCREEN_WIDTH-5;y,SCREEN_HEIGHT+20;zoom,0.8;diffuse,1,0,0,1;shadowlength,2"
+        ResetCommand="hidden,1;y,SCREEN_HEIGHT+20;diffusealpha,1"
+        FadeCommand="decelerate,1;diffusealpha,0;queuecommand,Hide" HideCommand="hidden,1"
+        XFailP2MessageCommand="%function(self)
+            if CONSTMELODY.Profile.Get().Options_DefaultFail then return end
+            self:queuecommand('Fail')
+        end"
+        FailCommand="hidden,0;decelerate,1;y,SCREEN_HEIGHT-5"
+    />
+
+</children></ActorFrame>

@@ -1,0 +1,62 @@
+<ActorFrame> <children>
+	<Layer 
+		Type="ActorFrame"
+		GainFocusCommand="%function(self)
+			MESSAGEMAN:Broadcast('MELODYTHEMESSS21P')
+			self:linear(0.2); self:zoom(1.4)
+		end"
+		LoseFocusCommand="%function(self)
+			self:linear(0.2); self:zoom(0.7)
+		end"
+	><children>
+		<Layer 
+			Condition="game ~= 'techno'"
+			Type="ActorFrame"
+		><children>
+			<Layer
+				File="../4panels"
+				EnabledCommand="%function(self) if game == 'dance' then self:diffuse(ColorRGB(0)) else self:diffuse(.16,.24,.27,1) end
+					end"
+				DisabledCommand="%function(self) if game == 'dance' then self:diffuse(.24,.31,.35,1) else self:diffuse(.12,.2,.23,1) end
+					MESSAGEMAN:Broadcast('MELODYTHEMESSS2SetTo2P')
+				end"
+				OnCommand="%FadeIn"
+				OffCommand="%OutCommand"
+			/>
+			<Layer
+				File="../5panels"
+				EnabledCommand="%function(self) if game == 'pump' then self:diffuse(ColorRGB(0)) else self:diffuse(.16,.24,.27,1) end end"
+				DisabledCommand="%function(self) if game == 'pump' then self:diffuse(.24,.31,.35,1) else self:diffuse(.12,.2,.23,1) end end"
+				OnCommand="%FadeIn"
+				OffCommand="%OutCommand"
+			/>
+		</children></Layer>
+		<Layer 
+			Condition="game == 'techno'"
+			Type="ActorFrame"
+		><children>
+			<Layer
+				File="../8panels"
+				EnabledCommand="%function(self) self:diffuse(ColorRGB(0)) end"
+				DisabledCommand="diffuse,.24,.31,.35,1"
+				OnCommand="%FadeIn"
+				OffCommand="%OutCommand"
+			/>
+			<Layer
+				File="../1panel"
+				EnabledCommand="%function(self) self:diffuse(.16,.24,.27,1) end"
+				DisabledCommand="diffuse,.12,.2,.23,1"
+				OnCommand="%FadeIn"
+				OffCommand="%OutCommand"
+			/>
+		</children></Layer>
+		<Layer
+			File="1Player"
+			InitCommand="y,130"
+			EnabledCommand="%function(self) self:diffuse(1,1,1,1) self:wag() self:effectmagnitude(0,0,20); self:effectclock('bgm'); end"
+			DisabledCommand="diffuse,.24,.31,.35,1"
+			OnCommand="%FadeIn"
+			OffCommand="%OutCommand"
+		/>
+	</children></Layer>
+</children> </ActorFrame>

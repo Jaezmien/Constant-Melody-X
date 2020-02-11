@@ -1,0 +1,86 @@
+<ActorFrame
+    OverlayReadyMessageCommand="%function(self)
+        if not stitch('config').EnableGameplayPause or not CONSTMELODY.MinimumVersion('V4.0.1') then return end
+        jzmn_isPaused = false
+        jzmn_pauseCur = 1
+        --
+        local event = stitch 'lua.event'
+        event.Persist('key char', 'jzmn gamepause', function(char, special)
+            if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
+                if not special.ctrl and char==stitch('config').GameplayPauseKeybind then -- Change this to your preferred keybind
+                    jzmn_isPaused = not jzmn_isPaused
+                    SCREENMAN:GetTopScreen():PauseGame( jzmn_isPaused )
+                    self:queuecommand(jzmn_isPaused and 'Pause' or 'Unpause')
+                end
+            end
+        end)
+        self:queuecommand('SetSelections')
+    end"
+    StepP1UpPressMessageCommand="%function(self)
+        if not stitch('config').EnableGameplayPause or not CONSTMELODY.MinimumVersion('V4.0.1') then return end
+        if not jzmn_isPaused or SCREENMAN:GetTopScreen():GetName() ~= 'ScreenGameplay' then return end
+        jzmn_pauseCur = jzmn_pauseCur-1
+        if jzmn_pauseCur<1 then jzmn_pauseCur=3 end
+        self:queuecommand('SetSelections')
+    end"
+    StepP1DownPressMessageCommand="%function(self)
+        if not stitch('config').EnableGameplayPause or not CONSTMELODY.MinimumVersion('V4.0.1') then return end
+        if not jzmn_isPaused or SCREENMAN:GetTopScreen():GetName() ~= 'ScreenGameplay' then return end
+        jzmn_pauseCur = jzmn_pauseCur+1
+        if jzmn_pauseCur>3 then jzmn_pauseCur=1 end
+        self:queuecommand('SetSelections')
+    end"
+
+    InitCommand="hidden,1"
+    PauseCommand="%function(self)
+        self:hidden(0)
+        jzmn_isPaused=true
+    end"
+    UnpauseCommand="%function(self)
+        self:hidden(1)
+        jzmn_isPaused=false
+        if jzmn_pauseCur==1 then
+            -- do nothing
+        elseif jzmn_pauseCur==2 then
+            GAMESTATE:ApplyGameCommand('mod, clearall, 3x, Overhead, scalable')
+            SCREENMAN:SetNewScreen( 'ScreenBranchStage' ) -- Might wanna change this...
+        elseif jzmn_pauseCur==3 then
+            SCREENMAN:SetNewScreen( SongSelectionScreen() )
+        end
+    end"
+><children>
+
+    <Layer
+        Type="Quad"
+        OverlayReadyMessageCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+15;zoomto,200,240;diffuse,0,0,0,0.4"
+    />
+
+    <Layer
+        Type="BitmapText"
+        Font="_misoreg small"
+        Text="Continue"
+        OverlayReadyMessageCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-40"
+        SetSelectionsCommand="%function(self)
+            self:diffusealpha(jzmn_pauseCur==1 and 1 or 0.7)
+        end"
+    />
+    <Layer
+        Type="BitmapText"
+        Font="_misoreg small"
+        Text="Restart"
+        OverlayReadyMessageCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y"
+        SetSelectionsCommand="%function(self)
+            self:diffusealpha(jzmn_pauseCur==2 and 1 or 0.7)
+        end"
+    />
+    <Layer
+        Type="BitmapText"
+        Font="_misoreg small"
+        Text="Exit"
+        OverlayReadyMessageCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+40"
+        SetSelectionsCommand="%function(self)
+            self:diffusealpha(jzmn_pauseCur==3 and 1 or 0.7)
+        end"
+    />
+
+</children></ActorFrame>

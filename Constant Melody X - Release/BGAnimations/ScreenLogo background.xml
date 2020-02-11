@@ -1,0 +1,4 @@
+<ActorFrame><children>
+	<Layer File="_3dmaze" Condition="CONSTMELODY.MinimumVersion('V3')"/>
+	<Layer File="_shared background normal" Condition="not CONSTMELODY.MinimumVersion('V3')"/>
+</children></ActorFrame>

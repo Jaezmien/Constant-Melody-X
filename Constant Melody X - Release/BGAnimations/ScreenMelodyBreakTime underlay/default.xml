@@ -1,0 +1,331 @@
+<ActorFrame
+    InitCommand="%function(self)
+
+        if not CONSTMELODY.MinimumVersion('V4.0.1') then -- only cool kidz past this point
+            SCREENMAN:SetNewScreen('ScreenMelodyMenu')
+            return
+        end
+
+        local function contains(a,b)
+            for i,v in pairs(a) do
+                if v == b then return true end
+            end
+            return false
+        end
+
+        --
+        local bt = CONSTMELODY.BreakTime
+        bt.Songs = {}
+
+        local s = SONGMAN:GetAllSongs()
+        table.sort(s, function(a,b) return a:GetGroupName() < b:GetGroupName() end)
+        for i,v in pairs( s ) do
+            local music_path = v:GetMusicPath()
+            local music_path_split = CONSTMELODY.Split( music_path , '/' )
+            local audio = music_path_split[ #music_path_split ]
+            local file = music_path_split[ #music_path_split-1 ]
+            local folder = music_path_split[ #music_path_split-2 ]
+            local sec = v:MusicLengthSeconds()
+            local timings,stops = v:GetTimingData()
+            if audio ~= 'silent.ogg' and sec >= 20 then
+                table.insert( bt.Songs, {
+                    title = v:GetDisplayMainTitle(),
+                    artist = v:GetDisplayArtist(),
+                    trans_title = v:GetTranslitFullTitle(),
+                    group = v:GetGroupName(),
+                    audio_path = music_path,
+                    song = v,
+                    bpms = timings,
+                    pause = stops,
+                } )
+            end
+        end
+
+        bt.Choice_Index = math.random( 1 , table.getn(bt.Songs) )
+        bt.Playing_Index = bt.Choice_Index
+        bt.Paused = false
+        --
+
+    end"
+><children>
+
+    <ActorFrame Condition="CONSTMELODY.MinimumVersion('V4.0.1')"
+        OnCommand="sleep,5;tween,3,'inOutCubic(%f,0,1,1)';addy,-60"
+    ><children>
+
+        <Layer
+            Type="Quad" InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-45+(240/2);zoomto,SCREEN_WIDTH,240;diffuse,0,0,0,0.4;vertalign,bottom"    
+            OnCommand="sleep,5;tween,3,'inOutCubic(%f,0,1,1)';zoomtoheight,240+20"
+        />
+
+        <Layer
+            Font="_woodrow" Text="Take a Break!" InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-140;shadowlength,2;rainbow;queuecommand,Time"
+            TimeCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                local song = bt.Songs[ bt.Playing_Index ]
+                local player = self:GetParent():GetChild('Audio Player')
+                    
+                local time_length = player:get():GetLengthSeconds()
+                local time_current = player:get():GetSoundPosition()
+
+                local t = song.song:GetBeatFromElapsedTime(time_current) -- SPEED DEPENDING ON BPM LOLLLLLLLLLL
+                -- stops
+                local fs = self:GetParent():GetChild('shy')
+                local fs_stop_spin = false
+                for i,v in pairs(song.pause) do
+                    if time_current>=song.song:GetElapsedTimeFromBeat(v[1]) then
+                        if time_current<=song.song:GetElapsedTimeFromBeat(v[1])+v[2] then
+                            fs_stop_spin = true
+                        end
+                    end
+                end
+                local bpm = 0
+                for i,v in pairs(song.bpms) do
+                    if t>=v[1] then
+                        bpm = v[2] 
+                    end
+                end
+                if not fs_stop_spin then
+                    fs:rotationx(90+math.random(0,360))
+                    fs:rotationy(   math.random(0,360))
+                    fs:rotationz(   math.random(0,360))
+                end
+                fs:y( SCREEN_CENTER_Y+220-60 + self:GetParent():GetChild('shy offset'):GetY() )
+                --
+                self:x(SCREEN_CENTER_X + math.sin(t) * 120)
+                self:y(SCREEN_CENTER_Y-140 + math.sin(t*2.2) * 5)
+                self:rotationz(math.cos(t*1.54)*5)
+                self:zoom(1+math.cos(t*1.58)*0.1)
+                --
+                self:sleep(1/60)
+                self:queuecommand('Time')
+            end"
+        />
+
+        <Layer
+            Type="Quad" InitCommand="hidden,1"
+            StepP1LeftPressMessageCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                bt.Choice_Index = bt.Choice_Index - 1
+                if bt.Choice_Index < 1 then bt.Choice_Index = #bt.Songs end
+                self:GetParent():playcommand('UpdateChoice')
+            end"
+            StepP1RightPressMessageCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                bt.Choice_Index = bt.Choice_Index + 1
+                if bt.Choice_Index > #bt.Songs then bt.Choice_Index = 1 end
+                self:GetParent():playcommand('UpdateChoice')
+            end"
+            StepP1UpPressMessageCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                self:GetParent():playcommand('PlaySong')
+                self:GetParent():playcommand('UpdateColor')
+            end"
+            StepP1MenuStartPressMessageCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                self:GetParent():playcommand('PlaySong')
+                self:GetParent():playcommand('UpdateColor')
+            end"
+            StepP1DownPressMessageCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                bt.Paused = not bt.Paused
+                self:GetParent():playcommand('PauseSong')
+                self:GetParent():playcommand('UpdateColor')
+            end"
+            StepP1Action1PressMessageCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                bt.Choice_Index = bt.Playing_Index
+                self:GetParent():playcommand('UpdateChoice')
+            end"
+            StepP1Action2PressMessageCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                bt.Choice_Index = math.random( 1 , table.getn(bt.Songs) )
+                self:GetParent():playcommand('UpdateChoice')
+            end"
+        />
+
+        <Layer
+            Type="BitmapText"
+            Font="_eurostile outline"
+            Text="Press UP to play chosen song!::Press DOWN to pause/unpause the current song!::Press LEFT / RIGHT to scroll through installed songs!::Press Action 1 to return to playing song!::Press Action 2 to select a random song!"
+            OnCommand="horizalign,left;vertalign,top;x,5;y,5;zoom,0.5;diffusealpha,0.4;shadowlength,0;sleep,5;decelerate,1;diffusealpha,0"
+        />
+
+        <!-- Time Bar -->
+        <Layer
+            Type="Polygon"
+            Name="Bar Bottom"
+            InitCommand="%function(self)
+                self:SetDrawMode( 'quads' )
+                self:SetNumVertices(4)
+                local w = 640/1.5
+                self:SetVertexPosition(0,-w/2,-2.5,0)
+                self:SetVertexPosition(1, w/2,-2.5,0)
+                self:SetVertexPosition(2, w/2, 2.5,0)
+                self:SetVertexPosition(3,-w/2, 2.5,0)
+
+                self:diffuse(0.4,0.4,0.4,1)
+                self:x(SCREEN_CENTER_X)
+                self:y(SCREEN_CENTER_Y+45)
+            end"
+        />
+
+        <Layer
+            Type="Polygon"
+            Name="Bar Top"
+            InitCommand="%function(self)
+                self:SetDrawMode( 'quads' )
+                self:SetNumVertices(4)
+                local w = 640/1.5
+                self:SetVertexPosition(0,-w/2,-2.5,0)
+                self:SetVertexPosition(1, w/2,-2.5,0)
+                self:SetVertexPosition(2, w/2, 2.5,0)
+                self:SetVertexPosition(3,-w/2, 2.5,0)
+
+                self:diffuse(0.4,0.4,0.4,1)
+                self:x(SCREEN_CENTER_X)
+                self:y(SCREEN_CENTER_Y+45)
+            end"
+            UpdateBarCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+
+                local song = bt.Songs[ bt.Playing_Index ]
+                local player = self:GetParent():GetChild('Audio Player')
+                    
+                local time_length = player:get():GetLengthSeconds()
+                local time_current = player:get():GetSoundPosition() / time_length
+
+                local w = 640/1.5
+                self:SetVertexPosition(1, (-w/2) + (w * time_current), -2.5,0)
+                self:SetVertexPosition(2, (-w/2) + (w * time_current), 2.5,0)
+
+                self:diffuse(1,1,1,1)
+            end"
+        />
+
+        <!-- Song Info -->
+
+        <Layer Type="BitmapText"
+            Font="_equestria"
+            Name="Details"
+            InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-40;zoom,0.8;wrapwidthpixels,SCREEN_WIDTH*0.9;shadowlength,2"
+            OnCommand="sleep,0.02;queuecommand,UpdateChoice"
+            UpdateChoiceCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                local song = bt.Songs[bt.Choice_Index]
+                self:settext(song.group .. '\n' .. song.title .. ' - ' .. song.artist)
+                self:playcommand('UpdateColor')
+                self:cmd('finishtweening;zoom,1;decelerate,0.1;zoom,0.8')
+            end"
+            UpdateColorCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                local song = bt.Songs[bt.Choice_Index]
+                self:settext(song.group .. '\n' .. song.title .. ' - ' .. song.artist)
+                if bt.Choice_Index == bt.Playing_Index then
+                    self:diffuse(1,1,0.2,1)
+                else
+                    self:diffuse(1,1,1,1)
+                end
+            end"
+        />
+        <Layer Type="ActorSound" File="donkabus.ogg" Name="Audio Player"
+            OnCommand="sleep,0.02;queuecommand,PlaySong"
+            PlaySongCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                bt.Playing_Index = bt.Choice_Index
+                if bt.Paused then
+                    self:get():Pause( false )
+                    self:get():Stop()
+                    bt.Paused = false
+                end
+                self:stop()
+                self:load( bt.Songs[bt.Playing_Index].audio_path )
+                self:start()
+            end"
+            PauseSongCommand="%function(self)
+                self:get():Pause( CONSTMELODY.BreakTime.Paused )
+            end"
+        />
+        <Layer
+            Type="BitmapText" Font="Common Normal" Text="00:00:00" Name="Timer Start"
+			OnCommand="x,SCREEN_CENTER_X-(640/1.5)/2;y,SCREEN_CENTER_Y+52;shadowlength,2;zoom,0.5;horizalign,left;queuecommand,UpdateTime"
+            UpdateTimeCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                if not bt.Paused then
+                    local song = bt.Songs[ bt.Playing_Index ]
+                    local player = self:GetParent():GetChild('Audio Player')
+                    
+                    local time_length = player:get():GetLengthSeconds()
+                    local time_current = player:get():GetSoundPosition()
+
+                    self:settext(
+                        CONSTMELODY.SecToHHMMSS( math.floor(time_current+0.5) )
+                    )
+                    self:GetParent():playcommand('UpdateBar')
+
+                    if math.floor((time_length-time_current)+0.5) < 1 then
+                        bt.Choice_Index = math.random( 1 , table.getn(bt.Songs) )
+                        bt.Playing_Index = bt.Choice_Index
+                        self:GetParent():playcommand('PlaySong')
+                        self:GetParent():playcommand('UpdateChoice')
+                    end
+                end
+                self:sleep(1/60)
+                self:queuecommand('UpdateTime')
+            end"
+        />
+        <Layer
+            Type="BitmapText" Font="Common Normal" Text="00:00:00" Name="Timer End"
+			OnCommand="x,SCREEN_CENTER_X+(640/1.5)/2;y,SCREEN_CENTER_Y+52;shadowlength,2;zoom,0.5;horizalign,right;queuecommand,UpdateTime"
+            UpdateTimeCommand="%function(self)
+                local bt = CONSTMELODY.BreakTime
+                if not bt.Paused then
+                    local song = bt.Songs[ bt.Playing_Index ]
+                    local player = self:GetParent():GetChild('Audio Player')
+                    
+                    local time_length = player:get():GetLengthSeconds()
+                    local time_current = player:get():GetSoundPosition()
+
+                    self:settext(
+                        CONSTMELODY.SecToHHMMSS( math.floor((time_length-time_current)+0.5) )
+                    )
+                end
+                self:sleep(1/60)
+                self:queuecommand('UpdateTime')
+            end"
+        />
+
+        <!-- Misc -->
+
+            <Z 
+                File="Fluttershy/char" Name="shy"
+                InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+220-60;zoom,5;rotationx,90;"
+            />
+            <Z
+                Type="Aux"
+                Name="shy offset"
+                OnCommand="sleep,5;tween,3,'inOutCubic(%f,0,1,1)';addy,60-10"
+            />
+
+            <Y
+                File="arrow"
+                InitCommand="x,80;y,SCREEN_CENTER_Y+20-60"
+                StepP1LeftPressMessageCommand="playcommand,Blink"
+                BlinkCommand="finishtweening;;zoom,1.25;linear,0.2;zoom,1"
+                FinalMessageCommand="accelerate,.5;addx,-SCREEN_WIDTH/2"
+                LoadCommand="addx,-SCREEN_WIDTH/2;decelerate,.5;addx,SCREEN_WIDTH/2"
+            />
+            <Y
+                File="arrow"
+                InitCommand="x,SCREEN_WIDTH-80;y,SCREEN_CENTER_Y+20-60;RotationZ,180"
+                StepP1RightPressMessageCommand="playcommand,Blink"
+                BlinkCommand="finishtweening;;zoom,1.25;linear,0.2;zoom,1"
+                FinalMessageCommand="accelerate,.5;addx,SCREEN_WIDTH/2"
+                LoadCommand="addx,SCREEN_WIDTH/2;decelerate,.5;addx,-SCREEN_WIDTH/2"
+            />
+
+        <!-- Misc -->
+
+    </children></ActorFrame>
+
+</children></ActorFrame>

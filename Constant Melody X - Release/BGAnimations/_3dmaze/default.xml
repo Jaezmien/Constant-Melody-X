@@ -1,0 +1,957 @@
+<ActorFrame><children>
+<ActorFrame
+    InitCommand="%function()
+
+        melody_initialized = false
+        function melody_ScreenUpdate()
+            if melody_initialized then
+				--
+				   
+				--
+			end
+            return 0
+        end
+
+		function melody_Update60FPS()
+            if melody_initialized then
+                local b = GAMESTATE:GetSongBeat()
+				--
+                Melody.Input:Handle()
+                bg_maze:update()
+				--
+            else melody_initialize(); melody_initialized=true end
+		end
+		
+		-- The '1/60 fps update method' and the 'HeySora method':tm: has it's pros and conss
+		-- One runs strictly on 1/60 second while one updates when the screen needs to.
+		-- So you'll want to use the first method when using frame counter updates, etc.
+		-- And the other for updating the position, etc.
+
+        function melody_initialize()
+
+            MESSAGEMAN:Broadcast('ApplyAFTTextures')
+        end
+
+		-- Stolen from Taro's Mawaru 10
+		-- not sure if im going to use this but lua does references and not copy of table so this'll be useful when re-using stuffs
+		function melody_deepcopy(orig)
+			local orig_type = type(orig)
+			local copy
+			if orig_type == 'table' then
+				copy = {}
+				for orig_key, orig_value in next, orig, nil do
+					copy[melody_deepcopy(orig_key)] = melody_deepcopy(orig_value)
+				end
+				setmetatable(copy, melody_deepcopy(getmetatable(orig)))
+			else -- number, string, boolean, etc
+				copy = orig
+			end
+			return copy
+		end
+
+        -- Has some pros against ActorSound
+        function melody_sound(str)
+            SOUND:PlayOnce(GAMESTATE:GetCurrentSong():GetSongDir()..'lua/sfx/'..str..'.ogg');
+        end
+		
+		-- Because yes
+		Melody = {}
+	
+		--+ Input
+		Melody.Input = {}
+        local m_i = Melody.Input
+        m_i.Press = {{0,0,0,0},{0,0,0,0}}
+        m_i.Held  = {{0,0,0,0},{0,0,0,0}}
+        m_i.ActionPress = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}}
+        m_i.ActionHeld = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}}
+        m_i.Handle = function(s)
+
+        end
+
+        --
+
+        function poly_npot(val)
+			local out = 2
+			while out < val do
+				out = out*2
+			end
+			return out
+		end
+
+        --
+
+        if not bg_maze then bg_maze={} end
+
+        bg_maze.debug = {
+            topDownView = false,
+            disableFog = false,
+            polygonMode = 0,
+        }
+
+        bg_maze.reset = function(self)  
+            self.walls   = melody_deepcopy( self._walls )
+            self.floors  = melody_deepcopy( self._floors )
+            self.plr.pos = melody_deepcopy( self.map.spawn )
+            self.plr.vel = {0,0,0}
+            self.plr.xangle = 0
+            self.plr.yangle = 0
+            --
+            self.initializeWalls( self.camera:GetChild('Walls') )
+            --
+            for i,v in pairs(bg_maze.walls) do
+
+                if (v[1][1] < bg_maze.map.tl[1]) then bg_maze.map.tl[1] = v[1][1] end
+                if (v[1][2] < bg_maze.map.tl[2]) then bg_maze.map.tl[2] = v[1][2] end
+                if (v[2][1] > bg_maze.map.br[1]) then bg_maze.map.br[1] = v[2][1] end
+                if (v[2][2] > bg_maze.map.br[2]) then bg_maze.map.br[2] = v[2][2] end
+
+            end
+        end
+
+        -- initialize world
+
+        bg_maze._walls = {
+            -------------------------------------
+            --          LEFT      RIGHT        --
+            -- SETUP { {x,y} , {x,y} , z , h } --
+            -------------------------------------
+
+            -- weird box (N)
+            { {-40,-40} , { 40,-40} , 0 }, -- N
+            { { 40,-40} , { 40, 40} , 0 }, -- R
+            { {-40, 40} , {-40,-40} , 0 }, -- L
+
+            -- side box walls
+            { {-40*5,40} , {-40  ,40} , 0 }, -- L
+            { {-40*8,40} , {-40*5,40} , 0 }, -- L slice
+
+            { {40,40} , {40*5,40} , 0 }, -- R
+                -- r slic
+                { {40*5,-80} , {40*8, -80} , 0 },
+                { {40*5, 40} , {40*5, -80} , 0 }, -- l
+
+            -- edge
+            { {-40*8,40*9} , {-40*8,  40} , 0 }, -- L
+            { { 40*8,40*9} , {    0,40*9} , 0 }, -- N
+            { {    0,40*9} , {-40*8,40*9} , 0 }, -- N
+            { { 40*8, -80} , { 40*8,40*9} , 0 }, -- R
+        }
+        bg_maze._floors = {
+            ---------------------------------
+            -- SETUP { {x,y} , {x,y} , z } --
+            ---------------------------------
+
+            { {-40*8,40} , {0,40*9} , 0 }, -- big
+            { {0,40} , {40*8,40*9} , 0 }, -- big
+            { {-40,-40} , {40,40} , 0 }, -- small
+            { {40*5,-80} , {40*8,40} , 0 }, -- bbbbb  r
+        }
+        bg_maze.walls = melody_deepcopy( bg_maze._walls )
+        bg_maze.floors = melody_deepcopy( bg_maze._floors )
+
+        bg_maze.map = {
+            tl = {0,0},
+            br = {0,0},
+
+            height = 100,
+            spawn = {0,-80,0},
+        }
+        -- fuck
+        for i,v in pairs(bg_maze.walls) do
+
+            if (v[1][1] < bg_maze.map.tl[1]) then bg_maze.map.tl[1] = v[1][1] end
+            if (v[1][2] < bg_maze.map.tl[2]) then bg_maze.map.tl[2] = v[1][2] end
+            if (v[2][1] > bg_maze.map.br[1]) then bg_maze.map.br[1] = v[2][1] end
+            if (v[2][2] > bg_maze.map.br[2]) then bg_maze.map.br[2] = v[2][2] end
+
+        end
+
+        bg_maze.initializeWalls = function(spr)
+
+            spr:SetDrawMode('quads')
+            spr:SetNumVertices( (table.getn(bg_maze.walls) * 4) + (table.getn(bg_maze.floors) * 4) + 4 )
+
+            local vert = 0
+
+            -- RENDER WALLS --
+            for i,v in pairs(bg_maze.walls) do
+
+                v[4] = v[4] or bg_maze.map.height
+
+                spr:SetVertexPosition(vert+0,v[1][1],-v[1][2],-v[3]) -- bl
+                spr:SetVertexPosition(vert+1,v[2][1],-v[2][2],-v[3]) -- br
+                spr:SetVertexPosition(vert+2,v[2][1],-v[2][2],-v[4]) -- tr
+                spr:SetVertexPosition(vert+3,v[1][1],-v[1][2],-v[4]) -- tl
+
+                -- debug
+
+                --[[spr:SetVertexColor(vert+0,1,0,0,1)
+                spr:SetVertexColor(vert+1,0,1,0,1)
+                spr:SetVertexColor(vert+2,0,0,1,1)
+                spr:SetVertexColor(vert+3,1,0,1,1)]]
+
+                spr:SetVertexTexCoord(vert+0,0,.25)
+                spr:SetVertexTexCoord(vert+1,.25,.25)
+                spr:SetVertexTexCoord(vert+2,.25,0)
+                spr:SetVertexTexCoord(vert+3,0,0)
+
+                --
+
+                vert = vert + 4
+
+            end
+
+            -- RENDER FLOORS --
+            for i,v in pairs(bg_maze.floors) do
+
+                v[3] = v[3] or 0
+
+                spr:SetVertexPosition(vert+0,v[1][1],-v[2][2],-v[3])
+                spr:SetVertexPosition(vert+1,v[2][1],-v[2][2],-v[3])
+                spr:SetVertexPosition(vert+2,v[2][1],-v[1][2],-v[3])
+                spr:SetVertexPosition(vert+3,v[1][1],-v[1][2],-v[3])
+
+                -- debug
+
+                --[[spr:SetVertexColor(vert+0,1,0,0,1)
+                spr:SetVertexColor(vert+1,0,1,0,1)
+                spr:SetVertexColor(vert+2,0,0,1,1)
+                spr:SetVertexColor(vert+3,1,0,1,1)]]
+
+                spr:SetVertexTexCoord(vert+0,.25,.25)
+                spr:SetVertexTexCoord(vert+1,.5,.25)
+                spr:SetVertexTexCoord(vert+2,.5,0)
+                spr:SetVertexTexCoord(vert+3,.25,0)
+
+                --
+
+                vert = vert + 4
+
+            end
+
+            -- RENDER CEILING
+            local wtl = bg_maze.map.tl
+            local wbr = bg_maze.map.br
+            spr:SetVertexPosition(vert+0,wtl[1],-wbr[2],-bg_maze.map.height)
+            spr:SetVertexPosition(vert+1,wbr[1],-wbr[2],-bg_maze.map.height)
+            spr:SetVertexPosition(vert+2,wbr[1],-wtl[2],-bg_maze.map.height)
+            spr:SetVertexPosition(vert+3,wtl[1],-wtl[2],-bg_maze.map.height)
+
+            --[[spr:SetVertexColor(vert+0,1,0,0,1)
+            spr:SetVertexColor(vert+1,0,1,0,1)
+            spr:SetVertexColor(vert+2,0,0,1,1)
+            spr:SetVertexColor(vert+3,1,0,1,1)]]
+
+            spr:SetVertexTexCoord(vert+0,.5,.25)
+            spr:SetVertexTexCoord(vert+1,.75,.25)
+            spr:SetVertexTexCoord(vert+2,.75,0)
+            spr:SetVertexTexCoord(vert+3,.5,0)
+
+            spr:zbuffer(1)
+            spr:ztest(1)
+
+            --
+
+            if not bg_maze.debug.disableFog then
+                bg_maze:fogWalls()
+                bg_maze:fogFloors()
+                bg_maze:fogCeiling()
+            end
+
+            spr:SetPolygonMode( bg_maze.debug.polygonMode )
+
+            --[[spr:bounce()
+            spr:effectmagnitude(0,0,20)
+            spr:effectclock('timer')
+            spr:effectperiod(1)]]
+
+        end
+        bg_maze.initializePlayer = function(spr)
+
+            spr:SetDrawMode('fan')
+
+            local steps = math.pow(2,5)
+            local dia = 10
+            --spr:SetPolygonMode(1)
+
+            spr:SetNumVertices(1 + steps)
+            spr:SetVertexPosition(0,0,0,-1)
+            for i=1,steps do
+
+                local m = i/steps
+
+                spr:SetVertexPosition(i-1, math.cos(m*math.pi*2) * dia , math.sin(m*math.pi*2) * dia ,-1)
+
+                if math.sin(m*math.pi*2) >= math.pi/24 then spr:SetVertexColor(i-1,1,0,0,1)
+                else spr:SetVertexColor(i-1,1,1,1,1) end
+
+            end
+
+            --[[
+                spr:SetDrawMode('quads')
+            
+                spr:SetNumVertices(4)
+
+                spr:SetVertexPosition(0,-10, 10,-5)
+                spr:SetVertexPosition(1, 10, 10,-5)
+                spr:SetVertexPosition(2, 10,-10,-5)
+                spr:SetVertexPosition(3,-10,-10,-5)
+
+                spr:SetVertexColor(0,1,0,0,1)
+                spr:SetVertexColor(1,1,0,0,1)
+            ]]
+
+        end
+        
+        bg_maze.removeWall = function(self,ind)
+            table.remove(self.walls,ind)
+            bg_maze.initializeWalls( self.camera:GetChild('Walls') )
+        end
+        bg_maze.addWall = function(self,posL,posR,z,h,args)
+            local w = {posL,posR,z or 0,h or 0}
+            if args then
+                for k,v in pairs(args) do
+                    w[k] = v
+                end
+            end
+            table.insert(self.walls,w)
+
+            bg_maze.initializeWalls( self.camera:GetChild('Walls') )
+        end
+
+        bg_maze.fogWalls = function(self)
+            local vert = 0
+            for i,w in pairs(self.walls) do
+                local pos = {
+                    {w[1][1],w[2][2],-w[3]}, -- bl
+                    {w[2][1],w[2][2],-w[3]}, -- br
+                    {w[2][1],w[1][2],-w[4] or -bg_maze.map.height}, -- tr
+                    {w[1][1],w[1][2],-w[4] or -bg_maze.map.height}, -- tl
+                }
+                local mlt = {
+                    {1,0,0},
+                    {0,1,0},
+                    {0,0,1},
+                    {1,0,1},
+                }
+                for k,v in pairs(pos) do
+                    local dist = bg_maze.pointDistToPoint3D({self.plr.pos[1],-self.plr.pos[2],self.plr.pos[3]}, v)
+                    local dmlt = 1
+                    local d = {100,600}
+                    if dist < d[1] then dmlt = 1 end
+                    if dist >= d[1] and dist <= d[2] then
+                        dmlt = inOutQuad( dist-d[1] , 1 , -1 , d[2]-d[1] )
+                    end
+                    if dist > d[2] then dmlt = 0 end
+                    --self.camera:GetChild('Walls'):SetVertexColor(vert+(k-1),mlt[k][1]*dmlt,mlt[k][2]*dmlt,mlt[k][3]*dmlt,1)
+                end
+                --
+                vert = vert + 4
+            end
+        end
+        bg_maze.fogFloors = function(self)
+            local vert = table.getn(self.walls) * 4
+            for i,w in pairs(self.floors) do
+                local pos = {
+                    {w[1][1],w[2][2],-w[3]}, -- bl
+                    {w[2][1],w[2][2],-w[3]}, -- br
+                    {w[2][1],w[1][2],-w[3]}, -- tr
+                    {w[1][1],w[1][2],-w[3]}, -- tl
+                }
+                local mlt = {
+                    {1,0,0},
+                    {0,1,0},
+                    {0,0,1},
+                    {1,0,1},
+                }
+                for k,v in pairs(pos) do
+                    local dist = bg_maze.pointDistToPoint3D({self.plr.pos[1],-self.plr.pos[2],self.plr.pos[3]}, v)
+                    local dmlt = 1
+                    local d = {100,600}
+                    if dist < d[1] then dmlt = 1 end
+                    if dist >= d[1] and dist <= d[2] then
+                        dmlt = inOutQuad( dist-d[1] , 1 , -1 , d[2]-d[1] )
+                    end
+                    if dist > d[2] then dmlt = 0 end
+                    --self.camera:GetChild('Walls'):SetVertexColor(vert+(k-1),mlt[k][1]*dmlt,mlt[k][2]*dmlt,mlt[k][3]*dmlt,1)
+                end
+                --
+                vert = vert + 4
+            end
+        end
+        bg_maze.fogCeiling = function(self)
+            local vert = table.getn(self.walls) * 4 + table.getn(self.floors) * 4
+
+            local c = {self.map.tl,self.map.br,self.map.height}
+
+            local pos = {
+                {c[1][1],c[2][2],-c[3]}, -- bl
+                {c[2][1],c[2][2],-c[3]}, -- br
+                {c[2][1],c[1][2],-c[3]}, -- tr
+                {c[1][1],c[1][2],-c[3]}, -- tl
+            }
+            local mlt = {
+                {1,0,0},
+                {0,1,0},
+                {0,0,1},
+                {1,0,1},
+            }
+
+            for k,v in pairs(pos) do
+                local dist = bg_maze.pointDistToPoint3D({self.plr.pos[1],-self.plr.pos[2],self.plr.pos[3]}, v)
+                local dmlt = 1
+                local d = {100,600}
+                if dist < d[1] then dmlt = 1 end
+                if dist >= d[1] and dist <= d[2] then
+                    dmlt = inOutQuad( dist-d[1] , 1 , -1 , d[2]-d[1] )
+                end
+                if dist > d[2] then dmlt = 0 end
+                --self.camera:GetChild('Walls'):SetVertexColor(vert+(k-1),mlt[k][1]*dmlt,mlt[k][2]*dmlt,mlt[k][3]*dmlt,1)
+            end
+        end
+
+        -- core stuffs
+
+        bg_maze.frames = 0
+        bg_maze.update = function(self)
+
+            -- update plr
+
+            self.plr.xangle = self.controller:GetX()
+
+            self.plr.vel[1] = math.sin(self.plr.xangle) * 2 * self.controller:GetY()
+            self.plr.vel[2] = math.cos(self.plr.xangle) * 2 * self.controller:GetY()
+
+            --if self.controller:GetY()==0 then self.plr.isMoving=false; else self.playcomman
+            self.plr.isMoving = self.controller:GetY() ~= 0
+
+            bg_maze:checkPlrCollision()
+
+            --[[bg_maze.camera:GetChild('Debug'):x( 0 )
+            bg_maze.camera:GetChild('Debug'):y( 0 )
+            bg_maze.camera:GetChild('Debug'):z( self.plr.pos[3]*0.08 + self.plr.height/2 )
+            bg_maze.camera:GetChild('Debug'):rotationz( (self.plr.xangle/math.pi) * 2 * -90 )]]
+
+            -- update walls
+
+            bg_maze.camera:GetChild('Walls'):x( -self.plr.pos[1] )
+            bg_maze.camera:GetChild('Walls'):y( -self.plr.pos[2] )
+            bg_maze.camera:GetChild('Walls'):z( (self.plr.height-30) - self.plr.pos[3] )
+
+            bg_maze.camera:rotationz( (self.plr.xangle/math.pi) * 2 * 90 )
+
+            -- update world
+
+            local ybob = bg_maze.debug.topDownView and 0 or math.sin(self.frames*0.02)*5
+
+            bg_maze.camera:y(SCREEN_CENTER_Y + ybob + math.abs(math.sin(self.plr.movingFrames))*5)
+            if bg_maze.debug.topDownView then
+                bg_maze.camera:rotationx( 180 + (self.plr.yangle/math.pi) * -90 )
+                bg_maze.camera:z( 160 )
+            else
+                bg_maze.camera:rotationx( 90 + (self.plr.yangle/math.pi) * -90)
+                bg_maze.camera:z( 260 )
+            end
+
+            if self.plr.startStop and 
+                ( math.sin(self.plr.movingFrames) > -0.2 and math.sin(self.plr.movingFrames) < 0.2 )
+            then
+                self.plr.isMoving=false;
+                self.plr.movingFrames=0
+            end
+            if self.plr.isMoving then self.plr.movingFrames=self.plr.movingFrames+0.1 end
+            
+            --
+
+            bg_maze.frames = bg_maze.frames + 1
+        end
+
+        bg_maze.plr = {
+            pos = {0,-160,0},
+            vel = {0,0,0},
+
+            xangle = 0,
+            yangle = 0,
+            strafe = 0,
+
+            height = 80,
+
+            isMoving=false,
+            movingFrames=0,
+
+            isFalling=false,
+            isJumping=false,
+            jumpingFrames=0,
+        }
+
+        -- collision
+            bg_maze.pointDistToPoint = function(a,b)
+                local v = {b[1]-a[1],b[2]-a[2]}
+                return math.sqrt( v[1]*v[1] + v[2]*v[2] )
+            end
+            bg_maze.pointDistToPoint3D = function(a,b)
+                local v = {b[1]-a[1],b[2]-a[2],b[3]-a[3]}
+                return math.sqrt( v[1]*v[1] + v[2]*v[2] + v[3]*v[3] )
+            end
+            bg_maze.pointDistToLine = function(a,b) -- {x,y}, {{x1,y1},{x2,y2}}
+
+                local len = function(la,lb)
+                    local v = {lb[1]-la[1],lb[2]-la[2]}
+                    return math.sqrt( v[1]*v[1] + v[2]*v[2] )
+                end -- length of two points
+
+                local bd = {b[1][1]-b[2][1],b[1][2]-b[2][2]} -- {startx-endx,starty-endy}
+                local u = ( (a[1]-b[1][1])*(b[2][1]-b[1][1]) + (a[2]-b[1][2])*(b[2][2]-b[1][2]) ) / math.pow(math.sqrt(bd[1]*bd[1]+bd[2]*bd[2]),2)
+
+                --if u < -0 or u > 1.0 then return nil end
+                u = math.max(math.min(u,1),0)
+
+                return len( a , { b[1][1]+u*(b[2][1]-b[1][1]) , b[1][2]+u*(b[2][2]-b[1][2]) } )
+
+            end
+            bg_maze.pointCircleCollision = function(a,b) -- circ{x,y,dia}, point{x,y}
+
+                local dx = b[1]-a[1]
+                local dy = b[2]-a[2]
+
+                local d = math.sqrt( dx*dx + dy*dy )
+                
+                return d<=a[3] and {
+                    pdst=d
+                } or nil
+
+            end
+            bg_maze.pointCircleCollision3D = function(a,b) -- circ{x,y,z,dia}, point{x,y,z}
+
+                local dx = b[1]-a[1]
+                local dy = b[2]-a[2]
+                local dz = b[3]-a[3]
+
+                local d = math.sqrt( dx*dx + dy*dy + dz*dz )
+                
+                return d<=a[4] and {
+                    pdst=d
+                } or nil
+
+            end
+            bg_maze.lineCircleCollision = function(a,b) -- circ{x,y,dia}, line{{x1,y1},{x2,y2}}
+
+                -- http://paulbourke.net/geometry/pointlineplane/ + http://paulbourke.net/geometry/pointlineplane/source.c
+
+                --
+                -- helo yes im 15 whats is vector projection
+                -- ( i have no fucking idea how this works but it does lol )
+                --
+
+                -- egg 1
+
+                local egg1 = bg_maze.pointCircleCollision(a,b[1])
+                if egg1 then return egg1 end
+
+                -- egg 2
+
+                local egg2 = bg_maze.pointCircleCollision(a,b[2])
+                if egg2 then return egg2 end
+
+                --
+                
+
+                local bd = {b[1][1]-b[2][1],b[1][2]-b[2][2]} -- {startx-endx,starty-endy}
+                local u = ( (a[1]-b[1][1])*(b[2][1]-b[1][1]) + (a[2]-b[1][2])*(b[2][2]-b[1][2]) ) / math.pow(math.sqrt(bd[1]*bd[1]+bd[2]*bd[2]),2)
+
+                if u < -0 or u > 1.0 then return nil end
+
+                local isn = {b[1][1] + u * (b[2][1]-b[1][1]),
+                            b[1][2] + u * (b[2][2]-b[1][2])}
+
+                local dist = {isn[1]-a[1],isn[2]-a[2]}
+                local pdst = math.sqrt(dist[1]*dist[1]+dist[2]*dist[2])
+
+                if pdst <= a[3] then
+
+                    return {
+                        dist=pdst,
+                        pos={ b[1][1]+u*(b[2][1]-b[1][1]) , b[1][2]+u*(b[2][2]-b[1][2]) },
+                        offset={
+                            (a[1]-b[1][1]+u*(b[2][1]-b[1][1])),
+                            (a[2]-b[1][2]+u*(b[2][2]-b[1][2]))
+                        }
+                    }
+
+                else return nil end
+
+            end
+            bg_maze.lineCircleCollision3D = function(a,b) -- circ{x,y,z,dia}, line{{x1,y1,z1},{x2,y2,z2}}
+
+                -- http://paulbourke.net/geometry/pointlineplane/ + http://paulbourke.net/geometry/pointlineplane/source.c
+
+                --
+                -- helo yes im 15 whats is vector projection
+                -- ( i have no fucking idea how this works but it does lol )
+                --
+
+                -- egg 1
+
+                local egg1 = bg_maze.pointCircleCollision(a,b[1])
+                if egg1 then return egg1 end
+
+                -- egg 2
+
+                local egg2 = bg_maze.pointCircleCollision(a,b[2])
+                if egg2 then return egg2 end
+
+                --
+                
+
+                local bd = {b[1][1]-b[2][1],b[1][2]-b[2][2],b[1][3]-b[2][3]} -- {startx-endx,starty-endy}
+                local u = ( (a[1]-b[1][1])*(b[2][1]-b[1][1]) + (a[2]-b[1][2])*(b[2][2]-b[1][2]) + (a[3]-b[1][3])*(b[2][3]-b[1][3]) ) / math.pow(math.sqrt(bd[1]*bd[1]+bd[2]*bd[2]+bd[3]*bd[3]),2)
+
+                if u < -0 or u > 1.0 then return nil end
+
+                local isn = {b[1][1] + u * (b[2][1]-b[1][1]),
+                            b[1][2] + u * (b[2][2]-b[1][2]),
+                            b[1][3] + u * (b[2][3]-b[1][3])}
+
+                local dist = {isn[1]-a[1],isn[2]-a[2],isn[3]-a[3]}
+                local pdst = math.sqrt(dist[1]*dist[1]+dist[2]*dist[2]+dist[3]*dist[3])
+
+                if pdst <= a[4] then
+
+                    return {
+                        dist=pdst,
+                        pos={ b[1][1]+u*(b[2][1]-b[1][1]), b[1][2]+u*(b[2][2]-b[1][2]), b[1][3]+u*(b[2][3]-b[1][3]) },
+                        offset={
+                            (a[1]-b[1][1]+u*(b[2][1]-b[1][1])),
+                            (a[2]-b[1][2]+u*(b[2][2]-b[1][2])),
+                            (a[3]-b[1][3]+u*(b[2][3]-b[1][3]))
+                        }
+                    }
+
+                else return nil end
+
+            end
+            bg_maze.boundingBoxCollision = function(a,b) -- {x1,y1,w1,h1}, {x2,y2,w2,h2}
+
+                local x,y = a,b
+
+                return ( x[1]-(x[3]/2) <= y[1]+(y[3]/2) ) and
+                    ( x[2]+(x[4]/2) >= y[2]-(y[4]/2) ) and
+                    ( x[2]-(x[4]/2) <= y[2]+(y[4]/2) ) and
+                    ( x[1]+(x[3]/2) >= y[1]-(y[3]/2) )
+            end
+        -- collision
+
+        bg_maze.checkPlrCollision = function(self)
+
+            local nvx = self.plr.vel[1] + (math.cos(self.plr.xangle) * 2 * self.plr.strafe)
+            local nvy = self.plr.vel[2] - (math.sin(self.plr.xangle) * 2 * self.plr.strafe)
+            local nvz = self.plr.vel[3]
+
+            --
+
+            local touchL = false
+            local touchF = false
+            local touchB = false
+            local touchU = false
+            local touchD = false
+            local touchR = false
+
+            --
+
+            if self.plr.isFalling then
+                nvz = nvz + 0.01 * self.plr.jumpingFrames
+                self.plr.jumpingFrames = self.plr.jumpingFrames + 1
+            end
+
+            --
+            for i,w in pairs(self.walls) do
+
+                -- x --
+
+                if nvx ~= 0 then
+                    local colX = bg_maze.lineCircleCollision({ self.plr.pos[1]+nvx,-self.plr.pos[2],10 },w)
+                    if colX and self.plr.pos[3]+nvz > -w[4] and self.plr.pos[3]+nvz-self.plr.height < -w[3] then
+                        if nvx<0 then touchL = true else touchR = true end
+                        nvx = 0
+                    end
+                end
+
+                -- y --
+
+                if nvy ~= 0 then
+                    local colY = bg_maze.lineCircleCollision({ self.plr.pos[1],-self.plr.pos[2]-nvy,10 },w)
+                    if colY and self.plr.pos[3]+nvz > -w[4] and self.plr.pos[3]+nvz-self.plr.height < -w[3] then
+                        if nvy<0 then touchB = true else touchF = true end
+                        nvy = 0
+                    end
+                end
+
+                -- z --
+                if nvz ~= 0 then
+                    if bg_maze.lineCircleCollision({ self.plr.pos[1],-self.plr.pos[2],10 },w) then -- player inside wall (if viewed from top)
+                        if self.plr.pos[3]+nvz-self.plr.height < -w[3] then
+                            nvz = -0.01
+                            self.plr.jumpingFrames = 0
+                        end
+                    end
+                end
+
+            end
+
+            --
+            for i,f in pairs(self.floors) do
+
+                -- 
+                
+                local fw = f[2][1]-f[1][1]
+                local fh = f[2][2]-f[1][2]
+                local fx = f[1][1]+fw/2
+                local fy = f[1][2]+fh/2
+                local fz = f[3]
+
+                local fsv = table.getn(self.walls) * 4 + ((i-1) * 4)
+                if i==12 then
+                    local x = bg_maze.camera:GetChild('Walls')
+                    local ofz = math.abs(math.sin(self.frames*0.01)) * -40
+                    x:SetVertexPosition(fsv+0,f[1][1],-f[2][2],-f[3]-ofz)
+                    x:SetVertexPosition(fsv+1,f[2][1],-f[2][2],-f[3]-ofz)
+                    x:SetVertexPosition(fsv+2,f[2][1],-f[1][2],-f[3]-ofz)
+                    x:SetVertexPosition(fsv+3,f[1][1],-f[1][2],-f[3]-ofz)
+                    fz = fz + ofz
+                end
+
+                --
+
+                if bg_maze.boundingBoxCollision({self.plr.pos[1]+nvx,-self.plr.pos[2]-nvy,20,20},{fx,fy,fw,fh}) then -- just check if circle is inside floor
+
+                    if self.plr.pos[3]+nvz-self.plr.height<-fz and self.plr.pos[3]+nvz>-fz and nvz > 0.01 then -- falling down
+                        touchD = true
+                        nvz = -.01
+                        self.plr.pos[3] = -fz
+                        self.plr.jumpingFrames=0
+                        self.plr.isJumping = false
+                        self.plr.isFalling = false
+                    elseif self.plr.pos[3]+nvz-self.plr.height<-fz and self.plr.pos[3]+nvz>=-fz and nvz < 0.01 then -- going up
+                        touchU = true
+                        nvz = .01
+                        self.plr.jumpingFrames=0
+                    end
+
+                end
+
+                self.plr.isFalling=not touchD
+
+                --
+
+                if nvx ~= 0 then
+                    if bg_maze.boundingBoxCollision({self.plr.pos[1]+nvx,-self.plr.pos[2],20,20},{fx,fy,fw,fh}) then -- just check if circle is inside floor
+                        if self.plr.pos[3]+nvz>-f[3] and -f[3]>self.plr.pos[3]+nvz-self.plr.height then
+                            if self.plr.pos[3]+nvz + f[3] <= 40 then
+                                if nvz == 0 then
+                                    self.plr.pos[3] = -f[3]
+                                    touchD = false
+                                end
+                            else
+                                nvx = 0
+                            end
+                        end
+                    end
+                end
+                if nvy ~= 0 then
+                    if bg_maze.boundingBoxCollision({self.plr.pos[1],-self.plr.pos[2]-nvy,20,20},{fx,fy,fw,fh}) then -- just check if circle is inside floor
+                        if self.plr.pos[3]+nvz>-f[3] and -f[3]>self.plr.pos[3]+nvz-self.plr.height then
+                            if self.plr.pos[3]+nvz + f[3] <= 40 then
+                                if nvz == 0 then
+                                    self.plr.pos[3] = -f[3]
+                                    touchD = false
+                                end
+                            else
+                                nvy = 0
+                            end
+                        end
+                    end
+                end
+
+            end
+
+            --
+
+            --print(self.frames,touchU,touchD)--
+            if touchD and touchU then bg_maze:reset() end
+            --print(touchL,touchR,touchF,touchB, bg_maze.controller:getaux())
+            if touchL or touchR or touchF or touchB then
+                if bg_maze.controller:getaux()==0 then
+                    bg_maze.controller:aux(1)
+                    bg_maze.controller:playcommand('HitWall')
+                end
+            end
+
+            --
+
+            self.plr.pos[1] = self.plr.pos[1] + nvx
+            self.plr.pos[2] = self.plr.pos[2] + nvy
+            self.plr.pos[3] = self.plr.pos[3] + math.min(nvz,6)
+
+            if self.plr.pos[3] > self.map.height then
+                bg_maze:reset()
+                return
+            end
+
+            if nvx ~= 0 or nvy ~= 0 or nvz ~= 0 then
+                if not bg_maze.debug.disableFog then
+
+                    bg_maze:fogWalls()
+                    bg_maze:fogFloors()
+                    bg_maze:fogCeiling()
+
+                end
+            end
+
+            if nvx ~= 0 or nvy ~= 0 then
+                self.plr.isMoving = true
+                self.plr.startStop = false
+            end
+
+            self.plr.vel = {0,0,nvz}
+
+        end
+
+        bg_maze.inputPress = function(self,plr,btn)
+            
+            --[[if plr==1 then -- MOVING
+
+                if btn==2 then -- DWON
+                    self.plr.vel[1] = - math.sin(self.plr.xangle) * 2
+                    self.plr.vel[2] = - math.cos(self.plr.xangle) * 2
+                elseif btn==3 then -- UP
+                    self.plr.vel[1] = math.sin(self.plr.xangle) * 2
+                    self.plr.vel[2] = math.cos(self.plr.xangle) * 2
+                end
+
+            else -- TURNING
+
+                if btn==2 then -- TURN UP (FOR WHAT)
+                    self.plr.yangle = self.plr.yangle - 0.04
+                    self.plr.yangle = bg_maze.debug.topDownView and ( math.mod(self.plr.yangle,math.pi*4) ) or ( math.max(math.min(self.plr.yangle,math.pi/2),-math.pi/2) )
+                elseif btn==3 then -- TURN DOWN
+                    self.plr.yangle = self.plr.yangle + 0.04
+                    self.plr.yangle = bg_maze.debug.topDownView and ( math.mod(self.plr.yangle,math.pi*4) ) or ( math.max(math.min(self.plr.yangle,math.pi/2),-math.pi/2) )
+                elseif btn==1 then -- TURN LEFT
+                    self.plr.xangle = self.plr.xangle - 0.04
+                    self.plr.xangle = math.mod(self.plr.xangle,math.pi*4)
+                elseif btn==4 then -- TURN RIGHT
+                    self.plr.xangle = self.plr.xangle + 0.04
+                    self.plr.xangle = math.mod(self.plr.xangle,math.pi*4)
+                end
+
+            end]]
+            
+        end
+        bg_maze.inputHold = function(self,plr,btn)
+            if plr == 1 then
+
+                if btn==1 then self.plr.strafe=-1
+                elseif btn==4 then self.plr.strafe=1 end
+
+            end
+        end
+        bg_maze.inputLift = function(self,plr,btn)
+            
+            if plr==1 then
+
+                if (btn==1 and self.plr.strafe ==-1) or (btn==4 and self.plr.strafe == 1) then self.plr.strafe=0 end
+
+                self.plr.startStop=true;
+            end
+
+        end
+
+        bg_maze.ActionInputHold = function(self,plr,btn)
+            if plr==1 then
+
+                if btn==1 then bg_maze.debug.topDownView = not bg_maze.debug.topDownView; bg_maze.plr.yangle=0; end
+                if btn==2 then bg_maze.debug.disableFog = not bg_maze.debug.disableFog; bg_maze.camera:playcommand('Refresh') end
+                if btn==4 then bg_maze:reset() end
+                if btn==5 then bg_maze.debug.polygonMode = 1-bg_maze.debug.polygonMode; bg_maze.camera:playcommand('Refresh') end
+
+            end
+        end
+        bg_maze.ActionInputPress = function(self,plr,btn)
+
+        end
+        bg_maze.ActionInputLift = function(self,plr,btn)
+
+        end
+
+    end"    
+><children>
+    <A Type="Quad" InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,0" OnCommand="sleep,99999"/>
+    <!--[[ Condition Actorframe ]]-->
+    <ActorFrame Condition="true"><children>
+
+        <!--[[ Where the magic happens ]]-->
+			<Aux
+                OnCommand="sleep,0.02;queuecommand,Start"
+				StartCommand="%function(self)
+					mod_firstSeenBeat = GAMESTATE:GetSongBeat()
+					self:queuecommand('Update')
+					MESSAGEMAN:Broadcast('StartScreenUpdate')
+				end"
+				UpdateCommand="%function(self)
+					melody_Update60FPS()
+					self:cmd('sleep,0.01;queuecommand,Update')
+				end"
+			/>
+			<Aux
+				StartScreenUpdateMessageCommand="%function(self)
+					self:tween(99999,'melody_ScreenUpdate()')
+				end"
+			/>
+
+            <A File="easing"/>
+
+            <Layer
+                Type="Aux"
+                InitCommand="%function(self)
+                    bg_maze.controller = self;
+                    self:xy(0,1) -- rot,vely
+                    self:aux(0)
+                end"
+                OnCommand="queuecommand,HitWall"
+                HitWallCommand="%function(self)
+                    self:y(0)
+                    self:linear(1)
+                    self:x( math.mod(self:GetX()+math.random(80,100)*(math.random(1,2)==1 and -1 or 1)*0.04,math.pi*4) )
+                    self:queuecommand('StartRunning')
+                end"
+                StartRunningCommand="%function(self)
+                    self:cmd('y,1;aux,0')
+                end"
+            />
+
+            <Layer
+                Type="ActorFrame"
+                InitCommand="%function(self)
+                    bg_maze.camera = self;
+                    self:SetFarDist(1000000)
+                    local function res_fov(fov) return 360 / math.pi * math.atan(math.tan(math.pi * (1 / (360 / fov))) * SCREEN_WIDTH / SCREEN_HEIGHT * 0.75) end
+                    self:fov( res_fov(100) )
+                end"
+                OnCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;ztest,1"
+            ><children>
+
+                <Layer Type="Polygon"
+                    Name="Walls"
+                    Texture="textures.png"
+                    OnCommand="%bg_maze.initializeWalls"
+                    RefreshCommand="%bg_maze.initializeWalls"
+                />
+
+                <Layer Type="Polygon" OnCommand="%bg_maze.initializePlayer" RefreshCommand="%bg_maze.initializePlayer" Name="Debug" InitCommand="hidden,1"/>
+
+            </children></Layer>
+
+    </children></ActorFrame>
+
+</children></ActorFrame>
+</children></ActorFrame>

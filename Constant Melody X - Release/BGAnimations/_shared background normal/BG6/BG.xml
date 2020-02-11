@@ -1,0 +1,7 @@
+<ActorFrame><children>
+    <A File="back.png" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT"/>
+	<B File="../cloud1.png" InitCommand="customtexturerect,0,0,2,2;texcoordvelocity,0.3,0;" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT"/>
+	<C File="../cloud2.png" InitCommand="customtexturerect,0,0,1,1;texcoordvelocity,0.2,0" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT"/>
+	<D File="../cloud3.png" InitCommand="customtexturerect,0,0,1,1;texcoordvelocity,0.4,0" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT"/>
+	<E File="front.png" OnCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT"/>
+</children></ActorFrame>

@@ -1,0 +1,10 @@
+<ActorFrame> <children>
+	<Layer File="ScreenWithMenuElements header" OnCommand="addy,-20;decelerate,0.5;addy,20"/>	
+	<Layer
+		Type="BitmapText"
+		Text="SELECT BEATMAP"
+		File="_wendy white"
+		InitCommand="diffuse,#FFFFFF;zoom,.4;shadowlength,0;horizalign,left;x,15;y,16"
+		OnCommand="addy,-20;decelerate,0.5;addy,20"
+	/>
+</children> </ActorFrame>
