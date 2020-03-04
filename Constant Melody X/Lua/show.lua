@@ -149,5 +149,15 @@ function _G.show(...)
     end
     return print(unpack(arg))
 end
+function _G.show_deep(...)
+    if arg.n == 1 then
+        local v = arg[1]
+        local c = type(v)
+        if c == "table" or c == "userdata" then
+            return show.table(v, 1)
+        end
+    end
+    return print(unpack(arg))
+end
 
 return setmetatable(show, show)

@@ -455,12 +455,14 @@ local melody = CONSTMELODY
 
 -- Message Frame
 
+    melody.ScreenSystemLayer = nil
+
     melody.MessageFrame = {}
     melody.MessageFrame.Frame = nil
     melody.MessageFrame.MessageOnCommand = function(self)
-        if not CONSTMELODY.MessageFrame.Frame then
-            CONSTMELODY.MessageFrame.Frame=self;
-        end
+        --if not CONSTMELODY.MessageFrame.Frame then
+        --    CONSTMELODY.MessageFrame.Frame=self;
+        --end
         if melody.MinimumVersion('V3') then
             --self:cmd('finishtweening;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-10;zoom,0.7;diffusealpha,0;bob;effectmagnitude,0,4,0;effectperiod,2;sleep,0.5;decelerate,0.5;diffusealpha,1')
             --self:cmd('sleep,1;decelerate,0.5;diffusealpha,0')
@@ -632,11 +634,43 @@ local melody = CONSTMELODY
             External:add_buffer(1,{1,6})
         end
     end
+-- Card Display
+    melody.Card = {}
+    melody.Card[1] = {}
+    melody.Card[1].Icon = nil
+    melody.Card[1].Text = nil
+    melody.Card[1].Position = { SCREEN_CENTER_X-(SCREEN_WIDTH*160/640) , SCREEN_BOTTOM - 13 }
+    melody.Card[2] = {}
+    melody.Card[2].Icon = nil
+    melody.Card[2].Text = nil
+    melody.Card[2].Position = { SCREEN_CENTER_X+(SCREEN_WIDTH*160/640) , SCREEN_BOTTOM - 13 }
+    -- it was too long
+    melody.Card.Initialize_Text = function(self,pn)
+        -- shadowlength,0;horizalign,left;vertalign,bottom;zoom,0.4;ztest,1
+        self:shadowlength(0)
+        self:horizalign(pn==1 and 'left' or 'right')
+        self:vertalign('bottom')
+        self:zoom(0.4)
+        self:ztest(1)
+
+        -- Might consider removing card display at all??????
+
+        -- useless, any screensystemlayer actors can't be grabbed.
+        -- melody.Card[pn].Text = self
+    end
+    melody.Card.Initialize_Icon = function(self,pn)
+        -- DrawOrder,311;zoom,0.8
+        self:draworder(311)
+        self:zoom(0.8)
+
+        melody.Card[pn].Icon = self
+    end
 -- MISC
     melody.ScreenSelectPlayModeNITG = {}
     melody.ScreenSelectPlayModeNITG.Choice = 1
     melody.ScreenTitleMenu = {}
     melody.ScreenTitleMenu.Choice = 1
     melody.Chegg = false
+    melody.IsEditPlaying = false
     melody.Garbage = {} -- Incase I got too lazy
 -- 

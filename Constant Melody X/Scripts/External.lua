@@ -169,8 +169,6 @@ handler.tick = function(self)
 
         table.remove(self.buffer,1)
         self.last_seen_write = w_bf
-        self.timer:stoptweening()
-        self.timer:queuecommand('StartTimer')
     end
     --
 end
@@ -192,8 +190,8 @@ handler.check_write = function(self)
     if table.getn(self.last_seen_write.out) ~= table.getn(w_bf.out) then return false end
 
     local changed = false
-    for i,v in pairs(w_bf) do
-        if self.last_seen_write.out[i] ~= w_bf[i] then
+    for i,v in pairs(w_bf.out) do
+        if self.last_seen_write.out[i] ~= v then
             changed = true
             break
         end

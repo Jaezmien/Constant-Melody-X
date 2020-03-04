@@ -2,6 +2,17 @@
 
     <Layer
         Type="Quad"
+        Name="Initialized"
+        Condition="FUCK_EXE"
+        OverlayReadyMessageCommand="queuecommand,First"
+        FirstCommand="%function(self)
+            if init then init=nil; return end init = true
+            --
+        end"
+    />
+
+    <Layer
+        Type="Quad"
         Name="Screen Change"
         Condition="FUCK_EXE"
         OverlayReadyMessageCommand="queuecommand,First"
@@ -28,14 +39,18 @@
                 External.timer = self
                 External:initialize()
                 External.initialized = true
+                self:queuecommand('Detect')
             end
         end"
-        StartTimerCommand="%function(self)
-            self:sleep(1/2)
-            self:queuecommand('Check')
+        DetectCommand="%function(self)
+            if GAMESTATE:GetExternal(57) == 1 then
+                self:sleep(1/2)
+                self:queuecommand('Check')
+            end
+            self:sleep(1/60)
+            self:queuecommand('Detect')
         end"
         CheckCommand="%function(self)
-        
             if External:check_write() then
                 Debug('[External Handler] '.. GAMESTATE:GetExternal(59)..' took too long to read, clearing.')
                 External.last_seen_write = nil
@@ -54,6 +69,8 @@
             External:tick()
         end"
     />
+
+    <!-- Discord RPC -->
 
     <Layer
         Type="Quad"
@@ -80,6 +97,26 @@
                     end
                 end
             end)
+        end"
+    />
+
+    <Layer
+        Type="Quad"
+        Name="ScreenEdit State"
+        Condition="CONSTMELODY.MinimumVersion('V3')"
+        OverlayReadyMessageCommand="queuecommand,First"
+        FirstCommand="%function(self)
+            if SCREENEDIT then SCREENEDIT=nil; return end SCREENEDIT = true
+            self:luaeffect('Update')
+        end"
+        UpdateCommand="%function(self)
+            if SCREENMAN:GetTopScreen():GetName() == 'ScreenEdit' then
+                local isInGameMode = (SCREENMAN:GetTopScreen():GetChild('SongForeground'):GetNumChildren() > 0)
+                if CONSTMELODY.IsEditPlaying ~= isInGameMode then
+                    CONSTMELODY.IsEditPlaying = isInGameMode
+                    stitch('lua.event').Call('screenedit state', isInGameMode)
+                end
+            end
         end"
     />
 

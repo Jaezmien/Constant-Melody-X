@@ -21,6 +21,7 @@ import signal, os, sys
 cont_exit = False
 def final_exit():
     global cont_exit
+    global sched
     if sched.running:
         sched.shutdown(wait=False)
     cont_exit = True
@@ -32,7 +33,7 @@ def handler(signum, frame):
     else:
         final_exit()
     
-# Set the signal handlera
+# Set the signal handler
 signal.signal(signal.SIGINT, handler)
 
 ## CONFIG
@@ -212,7 +213,7 @@ def HeartbeatNotITG():
             nitg = NITGEXT.Scan( not unknown_nitg_filename )
             if nitg.version == "V1" or nitg.version == "V2":
                 print('⚠️  Unsupported NotITG version. Found: {0}, expected V3 or higher. Retrying in 5 seconds.'.format(nitg.version))
-            if nitg.GetExternal(60)==0:
+            elif nitg.GetExternal(60)==0:
                 print('⌛  NotITG found, but still initializing. Retrying in 5 seconds.')
             else:
                 print(textwrap.dedent("""\

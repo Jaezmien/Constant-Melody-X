@@ -38,6 +38,8 @@ various sounds from Super Meat Boy (lol)
     O  |
     \_/'   X
 
+    Version 1.2
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

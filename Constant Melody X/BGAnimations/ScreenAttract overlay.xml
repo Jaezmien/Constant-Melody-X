@@ -2,7 +2,7 @@
 	<BitmapText
 		Font="_wendy small"
 		Text="???"
-		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_BOTTOM-15-20;shadowlength,0;zoom,0.5;diffuse,#FFFFFF;playcommand,Blink;PlayCommand,Refresh"
+		OnCommand="x,SCREEN_CENTER_X;y,SCREEN_BOTTOM-15-30;shadowlength,0;zoom,0.5;diffuse,#FFFFFF;playcommand,Blink;PlayCommand,Refresh"
 		BlinkCommand="%function(self)
 			self:addy(-5/2)
 			self:bob()
