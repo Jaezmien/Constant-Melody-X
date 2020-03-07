@@ -8,11 +8,22 @@
 			end
 		end
 	end"
-	><children>
-	<Layer File="backstuff.png" Command="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-30"
+><children>
+	<Layer
+		File="back bright"
+		InitCommand="horizalign,right;x,SCREEN_WIDTH-10;y,SCREEN_CENTER_Y-30;zoomtowidth,SCREEN_WIDTH-20"
 	/>
-		<Layer Type="Quad"
-			OnCommand="diffuse,#1E282F59;stretchto,10,350,630,410"
-		/>	
-		
-	</children></ActorFrame>
+	<Layer
+		File="back dark"
+		InitCommand="horizalign,left;x,10;y,SCREEN_CENTER_Y-30;zoomtowidth,140"
+	/>
+	<Layer Type="Quad"
+		OnCommand="%function(self)
+			self:diffuse(30/255,40/255,47/255,89/255)
+			self:x(SCREEN_CENTER_X)
+			self:vertalign('top')
+			self:y(SCREEN_CENTER_Y - 30 + 280/2)
+			self:zoomto( SCREEN_WIDTH-20 , 60 )
+		end"
+	/>
+</children></ActorFrame>

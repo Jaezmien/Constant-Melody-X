@@ -1,3 +1,10 @@
 <ActorFrame> <children>
-	<Layer Type="Quad" Command="diffuse,#1E282F;stretchto,150,SCREEN_TOP,490,SCREEN_BOTTOM"/>	
+	<Layer
+		Type="Quad"
+		Command="%function(self)
+			self:diffuse(30/255,40/255,47/255,1)
+			self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y)
+			self:zoomto(640*0.45,SCREEN_HEIGHT)
+		end"
+	/>
 </children> </ActorFrame>
