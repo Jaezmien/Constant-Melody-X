@@ -1,7 +1,7 @@
 <ActorFrame><children>
 	<A
 		Type="Quad"
-		InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1;sleep,99999"
+		InitCommand="x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1;sleep,99999"
 	/>
 	<C
 		Type="Quad"
