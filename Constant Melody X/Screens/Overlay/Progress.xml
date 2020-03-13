@@ -1,0 +1,39 @@
+<ActorFrame><children>
+
+    <Layer
+        Type="Quad"
+        OverlayReadyMessageCommand="%function(self)
+            if not CONSTMELODY.MinimumVersion('V2') then self:hidden(1); return end
+
+            self:xy(SCREEN_CENTER_X,0)
+            self:vertalign('top')
+            self:zoomtowidth( SCREEN_WIDTH )
+            self:cropright(1)
+
+            stitch('lua.event').Persist('new screen','progress bar',function(os,ns)
+                if CONSTMELODY.Profile.Get().Options_ProgressBar then
+                    if ns == 'ScreenGameplay' then
+                        self:queuecommand('UpdateProgress')
+                    end
+                    if os == 'ScreenGameplay' then
+                        self:stoptweening()
+                        self:queuecommand('Reset')
+                    end
+                end
+            end)
+        end"
+        UpdateProgressCommand="%function(self)
+            self:diffuse( ColorRGB() )
+            local amt = GAMESTATE:GetSongTime() / ( GAMESTATE:GetCurrentSong():MusicLengthSeconds() )
+            self:cropright( 1-amt )
+            self:zoomtoheight( 10 - math.mod(GAMESTATE:GetSongBeat(),1)*5)
+            self:sleep(1/60)
+            self:queuecommand('UpdateProgress')
+        end"
+        ResetCommand="%function(self)
+            self:cropright(1)
+            self:diffusealpha(1)
+        end"
+    />
+
+</children></ActorFrame>

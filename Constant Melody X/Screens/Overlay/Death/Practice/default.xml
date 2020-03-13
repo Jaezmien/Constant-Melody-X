@@ -1,0 +1,9 @@
+<ActorFrame Name = "practice">
+<children>
+
+    <Layer File="practice1.png" />
+
+    <Layer File="practice2.png" />
+
+</children>
+</ActorFrame>

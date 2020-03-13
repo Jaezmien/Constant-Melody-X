@@ -16,16 +16,15 @@ event.Persist("key char","uksrt", function(c)
 end)
 
 -- Widescreen centering hack
-local function pref(name)
-    return PREFSMAN:GetPreference(name)
-end
-
 if FUCK_EXE then
+    local function pref(name)
+        return PREFSMAN:GetPreference(name)
+    end
     if  pref("CenterImageTranslateX") ~= 0 or
         pref("CenterImageTranslateY") ~= 0 or
         pref("CenterImageAddWidth") ~= 0 or
         pref("CenterImageAddHeight") ~= 0 then
-        event.Persist("update","afts sucks", function ()
+        event.Persist("update","afts sucks", function()
             DISPLAY:ChangeCentering(
                 pref("CenterImageTranslateX"),
                 pref("CenterImageTranslateY"),
@@ -39,4 +38,13 @@ end
 -- OpenITG EditorShowSongTitle emulation
 if config.EditorShowSongTitle == nil then
     config.EditorShowSongTitle = true
+end
+
+-- wee hee
+if not CONSTMELODY.MinimumVersion('V4') then
+    local disp_width = PREFSMAN:GetPrefence('DisplayWidth')
+    local disp_height = PREFSMAN:GetPrefence('DisplayHeight')
+    --
+    SCREEN_WIDTH = 480 * (disp_width / disp_height)
+    SCREEN_CENTER_X = SCREEN_WIDTH / 2
 end

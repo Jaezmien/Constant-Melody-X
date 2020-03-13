@@ -45,6 +45,7 @@
             GAMESTATE:ApplyGameCommand('mod, clearall, 3x, Overhead, scalable')
             SCREENMAN:SetNewScreen( 'ScreenBranchStage' ) -- Might wanna change this...
         elseif jzmn_pauseCur==3 then
+            GAMESTATE:ApplyGameCommand('mod, clearall, 3x, Overhead, scalable')
             SCREENMAN:SetNewScreen( SongSelectionScreen() )
         end
     end"

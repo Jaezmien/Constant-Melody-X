@@ -11,6 +11,8 @@
         <!-- Feel free to add more overlays here -->
         <Layer File="Aft" />
         
+        <Layer File="Progress"/>
+        
         <Layer File="BongoCat"/>
         <Layer File="ViewGC" />
 		

@@ -17,10 +17,10 @@ wraps = {
 -- 2: YOU DIED
 -- 3: Wasted
 -- 4: We'll be right back (thanks Slaugaus!)
+-- 5: Practice (thanks Chegg!)
 -- Scroll through them with Action5
 -- FailOverlay = 4
-
--- Now handled through profiles!
+-- <!> Now handled through profiles! <!>
 -- Options > Extra Options
 
 -- Used by OpenITG only; see NotITGPrefs.ini for the NotITG variant

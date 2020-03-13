@@ -35,7 +35,7 @@ end
 function death:Ready()
     if isReady then return end
     isReady = true
-    if not FUCK_EXE or not CONSTMELODY.MinimumVersion('V3.1') then self:hidden(1); return end -- Disable this if we're on OpenITG or v3.1 below
+    if not FUCK_EXE or not CONSTMELODY.MinimumVersion('V3.1') then self:hidden(1); return end -- Disable this if we're on OpenITG or below v3.1
     if not CONSTMELODY.Profile.Get().Options_FailOption then CONSTMELODY.Profile.Get().Options_FailOption = 1; CONSTMELODY.Profile.Set(); end
 
     for i=1,self:GetNumChildren() do

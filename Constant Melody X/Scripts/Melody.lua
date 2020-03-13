@@ -143,7 +143,7 @@ local melody = CONSTMELODY
     end
     melody.MinimumVersion = function(build) -- OpenITG|V1|V2|V3|V3.1|V4
         if build ~= 'OpenITG' and not FUCK_EXE then return false end
-        if build == 'OpenITG' and not FUCK_EXE then return true end -- Only one check for OpenITG
+        if build == 'OpenITG' then return true end -- Only one check for OpenITG
 
         local v_str,v_num = melody.GetBuildVersion()
 
@@ -166,6 +166,7 @@ local melody = CONSTMELODY
                 Options_ScreenStageOptions=false,
                 Options_EvaluationMusic=true,
                 Options_SelectMusicPony=true,
+                Options_ProgressBar=false,
             }
         end
         return melody.Profile.Profile(0).Melody
@@ -591,6 +592,16 @@ local melody = CONSTMELODY
             t.LoadSelections = function(self, list) if melody.Profile.Get().Options_SelectMusicPony then list[1] = true else list[2] = true end end
             t.SaveSelections = function(self, list)
                 melody.Profile.Get().Options_SelectMusicPony = list[1];
+            end
+            return t
+        end,
+        ProgressBar = function()
+            local t = OptionRowBase('ProgressBar')
+            t.OneChoiceForAllPlayers = true
+            t.Choices = { "Enable", "Disable" }
+            t.LoadSelections = function(self, list) if melody.Profile.Get().Options_ProgressBar then list[1] = true else list[2] = true end end
+            t.SaveSelections = function(self, list)
+                melody.Profile.Get().Options_ProgressBar = list[1];
             end
             return t
         end,
