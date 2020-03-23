@@ -135,11 +135,20 @@ local melody = CONSTMELODY
     melody.GetBuildVersion = function()
         if not FUCK_EXE then return nil end
         local versions = {'V1','V2','V3','V3.1','V4','V4.0.1'}
+
+        local version_string = 'V1'
+        local version_date = melody.BuildVersions[ version_string ]
+
         for i,v in pairs(versions) do
-            if melody.BuildVersions[v] >= tonumber(GAMESTATE:GetVersionDate()) then
-                return v, melody.BuildVersions[v]
+            if tonumber(GAMESTATE:GetVersionDate()) >= melody.BuildVersions[v]  then
+                
+                version_string = v
+                version_date = melody.BuildVersions[v]
+
             end
         end
+
+        return version_string, version_date
     end
     melody.MinimumVersion = function(build) -- OpenITG|V1|V2|V3|V3.1|V4
         if build ~= 'OpenITG' and not FUCK_EXE then return false end
