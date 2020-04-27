@@ -7,7 +7,7 @@ unknown_nitg_filename = False
 clientId = '445101504546734080'
 
 ## DISCORD RPC
-from pypresence import Presence, Activity
+from pypresence import Presence
 
 RPC = Presence(clientId)
 rpc_nitg_version = 'v3'
