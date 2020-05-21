@@ -210,6 +210,42 @@ handler.initialize = function(self)
     print('[External] Initialized!')
 end
 
+-- i was about to do this long if-else statement but i got lazy
+local debug_help = {
+    { {0,25}, 'Read Buffer' },
+    { 26, 'Read Buffer Length' },
+    { 27, 'Read Type (0 = Single, 1 = Part of Set, 2 = End of Set)' },
+    { {28,53}, 'Write Buffer' },
+    { 54, 'Write Buffer Length' },
+    { 55, 'Write Type (0 = Single, 1 = Part of Set, 3 = End of Set)' },
+    { 56, 'Read Flag by External (0 = Idle, 1 = Reserved/Writing, 2 = Allowing Read)'},
+    { 57, 'Write Flag by NotITG (0 = Idle, 1 = Available)' },
+    { 58, 'Reader ID' },
+    { 59, 'Writer ID' },
+    { 60, 'Initialized State (0 = No, 1 = Yes)' },
+    { 61, 'Extra 1' },
+    { 62, 'Extra 2' },
+    { 63, 'Extra 3' },
+}
+local debug_help_parseable = {}
+for i,v in pairs(debug_help) do
+    if type(v[1]) == 'table' then
+        for k=v[1][1], v[1][2] do
+            debug_help_parseable[ k ] = v[2]
+        end
+    else
+        debug_help_parseable[ v[1] ] = v[2]
+    end
+end
+handler.dump = function()
+    print('---')
+    for i=0,63 do
+        print( '', debug_help_parseable[i]  )
+        print( '', '', i+1, GAMESTATE:GetExternal(i) )
+    end
+    print('---')
+end
+
 --
 handler.last_seen_write = nil
 handler.timer = nil

@@ -128,13 +128,14 @@ local melody = CONSTMELODY
         ['V1']     = 20161226,
         ['V2']     = 20170405,
         ['V3']     = 20180617,
-        ['V3.1']   = 20180909,
+        ['V3.1']   = 20180827,
         ['V4']     = 20200112,
         ['V4.0.1'] = 20200126,
+        ['V4.1']   = 20200402, -- All versions are welcome, except do_not
     }
     melody.GetBuildVersion = function()
         if not FUCK_EXE then return nil end
-        local versions = {'V1','V2','V3','V3.1','V4','V4.0.1'}
+        local versions = {'V1','V2','V3','V3.1','V4','V4.0.1','V4.1'}
 
         local version_string = 'V1'
         local version_date = melody.BuildVersions[ version_string ]
@@ -548,11 +549,15 @@ local melody = CONSTMELODY
             t.OneChoiceForAllPlayers = true
             t.Choices = melody.ExtraOptions.FailOption_Choices
             t.LoadSelections = function(self, list)
-                if not melody.Profile.Get().Options_FailOption then list[1]=true; return end
-                for i=1, table.getn(self.Choices) do
-                    if melody.Profile.Get().Options_FailOption == i then
-                        list[i] = true
-                        return
+                if not CONSTMELODY.MinimumVersion('V3.1') or not FUCK_EXE then
+                    list[1] = true
+                else
+                    if not melody.Profile.Get().Options_FailOption then list[1]=true; return end
+                    for i=1, table.getn(self.Choices) do
+                        if melody.Profile.Get().Options_FailOption == i then
+                            list[i] = true
+                            return
+                        end
                     end
                 end
             end

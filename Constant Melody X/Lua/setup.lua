@@ -42,9 +42,6 @@ end
 
 -- wee hee
 if not CONSTMELODY.MinimumVersion('V4') then
-    local disp_width = PREFSMAN:GetPreference('DisplayWidth')
-    local disp_height = PREFSMAN:GetPreference('DisplayHeight')
-    --
-    SCREEN_WIDTH = 480 * (disp_width / disp_height)
+    SCREEN_WIDTH = 480 * PREFSMAN:GetPreference('DisplayAspectRatio')
     SCREEN_CENTER_X = SCREEN_WIDTH / 2
 end

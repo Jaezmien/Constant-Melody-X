@@ -64,9 +64,11 @@
         Name="External Handler Updater"
         Condition="CONSTMELODY.MinimumVersion('V3')"
         OverlayReadyMessageCommand="queuecommand,First"
-        FirstCommand="luaeffect,Tick"
+        FirstCommand="playcommand,Tick"
         TickCommand="%function(self)
             External:tick()
+            self:sleep( 0.01 )
+            self:queuecommand('Tick')
         end"
     />
 
