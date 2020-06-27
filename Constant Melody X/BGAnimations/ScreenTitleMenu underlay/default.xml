@@ -133,7 +133,8 @@
 				local htyp = 'AM'
 				if hour > 12 then hour = hour - 12; htyp = 'PM'; end -- 12 HOURS SYSTEM FTW >:VVV
 				if hour == 0 then hour = 12 end
-				self:settext('TIME: '..hour..':'..Minute()..':'..Second()..' '..htyp)
+				--self:settext('TIME: '..hour..':'..Minute()..':'..Second()..' '..htyp)
+				self:settext(string.format('TIME: %02d:%02d:%02d '..htyp,hour,Minute(),Second()))
 				self:sleep(1/60)
 				self:queuecommand('SetTime')
 			end" OffCommand="%TitleMenuOut"

@@ -265,7 +265,11 @@ local melody = CONSTMELODY
         elseif x < -6*n then
             x = x+12*n
         end
-        local s = scale(math.abs(x),0,4*n,3,-1)
+
+        -- this was bothering me for quite awhile
+        local screen_mult = ( ( ( SCREEN_WIDTH/640 ) - 1 ) * 1.2 ) + 1
+
+        local s = scale(math.abs(x*(2/screen_mult)),0,4*n,3,-1)
         local z = clamp(s,1,3)
         z = scale(z,1,3,1,1.5)
         s = clamp(s,0,maxClamp) 
@@ -278,7 +282,7 @@ local melody = CONSTMELODY
 
         if math.abs(offset) <= 1 then
             local t = 1 - math.abs(offset) -- [0-1]
-            self:zoom(0.5 + (1.15-0.5) * t)
+            self:zoom(0.5 + (1-0.5) * t)
         end
         if melody.Pony.TextFrame and math.abs(offset)<0.5 then
             local newIndex = Moduloop(itemIndex+1,1,12)

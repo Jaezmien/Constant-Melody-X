@@ -42,41 +42,7 @@ function IconCrop(self)
 	self:cropbottom(1-Color()/12)
 end
 
-function DifficultyColor( dc )
-	if dc == DIFFICULTY_EDIT then return "#c3c5d4" end
-	if CONSTMELODY.Chegg then return "#fedc00" end
-	local color = CONSTMELODY.Pony.Pony()
-	if color == 1  then return "#d5a4e6" end -- Twilight Sparkle
-	if color == 2  then return "#ffc360" end -- Applejack
-	if color == 3  then return "#fbf7ad" end -- Fluttershy
-	if color == 4  then return "#ebeff2" end -- Rarity
-	if color == 5  then return "#f4b6cf" end -- Pinkie Pie
-	if color == 6  then return "#9fdaf8" end -- Rainbow Dash
-	if color == 7  then return "#f5f59b" end -- Apple Bloom
-	if color == 8  then return "#fbbb64" end -- Scootaloo
-	if color == 9  then return "#eeecef" end -- Sweetie Belle
-	if color == 10 then return "#f9f7fa" end -- Princess Celestia
-	if color == 11 then return "#314a8d" end -- Princess Luna
-	if color == 12 then return "#f9c6e5" end -- Princess Cadence
-	return "#c3c5d4" -- Derpy
-end
-
-function BubbleColorRGB ( pn )
-	if GAMESTATE:IsPlayerEnabled( pn ) then
-		local steps = GAMESTATE:GetCurrentSteps( pn )
-		if not steps then return 1,1,1,0 end
-		steps = steps:GetDifficulty()
-		if steps == DIFFICULTY_EDIT	then return 0.71,0.72,0.73,1 end
-		return ColorRGB(steps-2)
-	end
-	return 1,1,1,1
-end
-
-function DifficultyColorRGB( n ) if n < 5 then return ColorRGB( n - 2 ) else return 0.71,0.72,0.73,1 end end
-
-function ColorRGB ( n,forcecolor )
-	if CONSTMELODY.Chegg then return hex_to_rgb("#fedc00") end
-	local color = (n and type(n) == 'number' and forcecolor) and n or CONSTMELODY.Pony.Pony()
+local function get_pony_color( color )
 	if color == 1  then return hex_to_rgb("#d5a4e6") end -- Twilight Sparkle
 	if color == 2  then return hex_to_rgb("#ffc360") end -- Applejack
 	if color == 3  then return hex_to_rgb("#fbf7ad") end -- Fluttershy
@@ -89,6 +55,38 @@ function ColorRGB ( n,forcecolor )
 	if color == 10 then return hex_to_rgb("#f9f7fa") end -- Princess Celestia
 	if color == 11 then return hex_to_rgb("#314a8d") end -- Princess Luna
 	if color == 12 then return hex_to_rgb("#f9c6e5") end -- Princess Cadence
+end
+
+function DifficultyColor( dc )
+	if dc == DIFFICULTY_EDIT then return "#c3c5d4" end
+	if CONSTMELODY.Chegg then return "#fedc00" end
+	local color = CONSTMELODY.Pony.Pony()
+	if color >= 1 and color <= 12 then
+		local pr,pg,pb,pa = get_pony_color(color)
+		return string.format("%f,%f,%f,1", pr,pg,pb)
+	end
+	return "#c3c5d4" -- Derpy
+end
+
+function BubbleColorRGB ( pn )
+	if GAMESTATE:IsPlayerEnabled( pn ) then
+		if not GAMESTATE:GetCurrentSteps( pn ) then return 1,1,1,0 end
+		local steps = GAMESTATE:GetCurrentSteps( pn ):GetDifficulty()
+		if steps == DIFFICULTY_EDIT	then return 0.71,0.72,0.73,1 end
+		return ColorRGB(steps-2)
+	end
+	return 1,1,1,1
+end
+
+function DifficultyColorRGB( n ) if n < 5 then return ColorRGB( n - 2 ) else return 0.71,0.72,0.73,1 end end
+
+function ColorRGB ( n,forcecolor )
+	if CONSTMELODY.Chegg then return hex_to_rgb("#fedc00") end
+	local color = (n and type(n) == 'number' and forcecolor) and n or CONSTMELODY.Pony.Pony() -- why need forcecolor :(
+	if color >= 1 and color <= 12 then
+		local pr,pg,pb,pa = get_pony_color(color)
+		return pr,pg,pb,pa
+	end
 	return hex_to_rgb("#c3c5d4")
 end
 
@@ -124,18 +122,17 @@ function BubbleColorText ( pn )
 	if CONSTMELODY.Chegg then return 0,0,0,1 end
 	
 	local color = CONSTMELODY.Pony.Pony()
-	if color == 1  then return 1,1,1,1 end -- Twilight Sparkle
-	if color == 2  then return 1,1,1,1 end -- Applejack
-	if color == 3  then return 0,0,0,1 end -- Fluttershy
-	if color == 4  then return 0,0,0,1 end -- Rarity
-	if color == 5  then return 1,1,1,1 end -- Pinkie Pie
-	if color == 6  then return 1,1,1,1 end -- Rainbow Dash
-	if color == 7  then return 0,0,0,1 end -- Apple Bloom
-	if color == 8  then return 1,1,1,1 end -- Scootaloo
-	if color == 9  then return 0,0,0,1 end -- Sweetie Belle
-	if color == 10 then return 0,0,0,1 end -- Princess Celestia
-	if color == 11 then return 1,1,1,1 end -- Princess Luna
-	if color == 12 then return 0,0,0,1 end -- Princess Cadence
+	local black_colors = {
+		 3, -- Fluttershy
+		 4, -- Rarity
+		 7, -- Apple Bloom
+		 9, -- Sweetie Belle
+		10, -- Princess Celestia
+		12, -- Princess Cadence
+	}
+	for i,v in pairs(black_colors) do
+		if v == color then return 0,0,0,1 end
+	end
 
 	return 1,1,1,1
 end
