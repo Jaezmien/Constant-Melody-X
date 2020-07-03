@@ -1,0 +1,77 @@
+<ActorFrame Name="Continued"><children>
+
+    <Layer
+        Type="ActorSound"
+        File="audio.ogg"
+        Name="Audio"
+        PlayCommand="%function(self)
+            self:stop()
+            self:start()
+
+            if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
+                SCREENMAN:GetTopScreen():PauseGame(true)
+            end
+
+            self:sleep( self:get():GetLengthSeconds() )
+            self:queuecommand('Stop')
+        end"
+        StopCommand="%function(self)
+            self:GetParent():hidden(1)
+
+            if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
+                SCREENMAN:GetTopScreen():PauseGame(false)
+                --GAMESTATE:FinishSong()
+            end
+        end"
+    />
+    
+    <Layer
+        Type="ActorFrameTexture"
+		Name="AFT"
+		OverlayReadyMessageCommand="%function(self)
+			self:SetWidth( DISPLAY:GetDisplayWidth() );
+			self:SetHeight( DISPLAY:GetDisplayHeight() );
+			self:EnableDepthBuffer( false );
+			self:EnableAlphaBuffer( true );
+			self:EnableFloat( false );
+			self:EnablePreserveTexture( true );
+			
+			self:Create();
+            self:hidden(1)
+			
+		end"
+        FreezeCommand="%function(self)
+			self:hidden(0)
+            self:sleep(0.04)
+            self:queuecommand('h')
+		end" hCommand="hidden,1"
+	/>
+
+	<Layer
+        Type="Sprite"
+        Texture="white"
+        Name="AFT Sprite"
+		InitCommand="aux,0"
+		OverlayReadyMessageCommand="%function(self)
+			if not FUCK_EXE then return end
+			self:SetTextureFiltering(true)
+			self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+			self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y);
+			self:sleep(0.01);
+		end"
+	/>
+
+    <Layer
+        Type="Quad"
+        InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,210/255,127/255,41/255,0.2"
+    />
+    <Layer
+        File="arrow"
+        Name="Arrow"
+        InitCommand="horizalign,left;vertalign,bottom"
+        SpawnCommand="xy,SCREEN_WIDTH,SCREEN_HEIGHT-20;linear,0.1;x,20"
+    />
+
+</children></ActorFrame>

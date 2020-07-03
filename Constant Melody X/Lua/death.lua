@@ -1,9 +1,14 @@
 local death = {}
 local current = CONSTMELODY.Profile.Get().Options_FailOption or 1
 
-local types = {{
-    Name = "Off"
-}}
+local types = {
+    {
+        Name = "Off"
+    },
+    {
+        Name = "Random"
+    },
+}
 
 local players = 0
 
@@ -20,6 +25,7 @@ local isReady = false
 
 function death.Switch(n)
     current = n
+
     if types[current].Prepare then
         types[current].Prepare(types[current].Frame)
     end
@@ -27,14 +33,22 @@ end
 
 function death.Trigger()
     if not CONSTMELODY.Profile.Get().Options_DefaultFail then return end -- If we're using default fail, don't call the script.
-    if types[current].Dead then
-        types[current].Dead(types[current].Frame)
+    local actual_current = current
+    if current == 2 then
+        actual_current = math.random(3, table.getn(types))
+        if types[actual_current].Prepare then -- one time prepare
+            types[actual_current].Prepare(types[current].Frame)
+        end
+    end
+    if types[actual_current].Dead then
+        types[actual_current].Dead(types[actual_current].Frame)
     end
 end
 
 function death:Ready()
     if isReady then return end
     isReady = true
+    d_af = self
     if not FUCK_EXE or not CONSTMELODY.MinimumVersion('V3.1') then self:hidden(1); return end -- Disable this if we're on OpenITG or below v3.1
     if not CONSTMELODY.Profile.Get().Options_FailOption then CONSTMELODY.Profile.Get().Options_FailOption = 1; CONSTMELODY.Profile.Set(); end
 
@@ -45,8 +59,8 @@ function death:Ready()
         style.Name = style.Name or name
         style.Frame = actor
         if style.Setup then style.Setup(actor) end
-        types[i+1] = style
-        CONSTMELODY.ExtraOptions.FailOption_Choices[i+1] = style.Name
+        types[i+2] = style
+        CONSTMELODY.ExtraOptions.FailOption_Choices[i+2] = style.Name
     end
 
     for i=1,2 do
@@ -68,6 +82,11 @@ function death.Start()
     if types[current].Prepare then
         types[current].Prepare(types[current].Frame)
     end
+end
+
+function death.Test()
+    death.Start()
+    death.Trigger()
 end
 
 return death

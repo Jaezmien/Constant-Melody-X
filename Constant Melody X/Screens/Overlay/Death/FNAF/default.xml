@@ -1,0 +1,116 @@
+<ActorFrame Name="FNAF"><children>
+
+	<!-- i am easily scared, let's go make a death screen that jumpscares us! :D -->
+	<Aux
+		Name="Controller"
+		SpookCommand="%function(self)
+			if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
+                SCREENMAN:GetTopScreen():PauseGame(true)
+            end
+			self:GetParent():playcommand('DoSpook')
+			self:sleep(0.05*30)
+			self:queuecommand('NextScreen')
+		end"
+		NextScreenCommand="%function(self)
+			self:GetParent():playcommand('Clean')
+		end"
+	/>
+
+	<Aux
+		Name="ScareUpdate"
+		UpdateCommand="%function(self)
+		
+			local animatronic_num = self:GetParent():GetChild('fg_scare'):getaux()
+			local sprite = self:GetParent():GetChild('fg_scare'):GetChildAt(animatronic_num)
+			-- i have no fucking idea how i will upscale this to handle other animatronics
+			if animatronic_num == 0 then -- chica
+				if sprite:getstate() > 11 then
+					sprite:setstate(7)
+				end
+			elseif animatronic_num == 1 then -- fred boi
+				if sprite:getstate() > 11 then
+					sprite:setstate(6)
+				end
+			end
+
+		end"
+	/>
+
+	<Layer
+		File="office"
+		Name="bg_office"
+
+		DoSpookCommand="hidden,0"
+	/>
+
+	<Layer
+		Type="ActorFrame"
+		Name="fg_scare"
+
+		DoSpookCommand="%function(self)
+			for i=1, self:GetNumChildren() do
+				self:GetChildAt(i-1):hidden(1)
+			end
+			self:cmd('sleep,0.03*7;queuecommand,Scare')
+		end"
+		ScareCommand="%function(self)
+			local rand = math.random(1,2)
+
+			self:aux(rand-1)
+			self:GetChildAt(rand-1):cmd('hidden,0;animate,1')
+		end"
+		CleanAnimatronicsCommand="%function(self)
+			for i=1, self:GetNumChildren() do
+				self:GetChildAt(i-1):cmd('animate,0;setstate,0;hidden,1;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT')
+			end
+		end"
+	><children>
+
+		<Layer
+			File="chica"
+		/>
+
+		<Layer
+			File="freddy"
+		/>
+
+	</children></Layer>
+
+	<Layer
+		File="camera"
+		Name="fg_camera"
+
+		DoSpookCommand="hidden,0;animate,1"
+	/>
+
+	<Layer
+		Type="ActorSound"
+		File="spook"
+		Name="fg_audio"
+
+		DoSpookCommand="stop;start"
+	/>
+
+	<Layer
+		File="rcamera"
+		Name="fg_camera_cleanup"
+
+		CleanCommand="%function(self)
+			self:cmd('hidden,0;animate,1')
+			self:sleep(0.03*11)
+			self:queuecommand('TrueClean')
+		end"
+		TrueCleanCommand="%function(self)
+			if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
+                SCREENMAN:GetTopScreen():PauseGame(false)
+            end
+			self:GetParent():GetChild('bg_office'):hidden(1)
+    		self:GetParent():GetChild('fg_camera'):cmd('animate,0;setstate,0;hidden,1')
+    		self:GetParent():GetChild('fg_camera_cleanup'):cmd('animate,0;setstate,0;hidden,1')
+    		self:GetParent():GetChild('fg_scare'):queuecommand('CleanAnimatronics')
+			self:GetParent():GetChild('fg_audio'):stop()
+			--GAMESTATE:FinishSong()
+		end"
+	/>
+
+</children></ActorFrame>

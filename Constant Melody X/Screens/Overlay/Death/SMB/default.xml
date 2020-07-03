@@ -1,0 +1,59 @@
+<ActorFrame Name="SMB"><children>
+
+    <Layer
+        Type="Aux"
+        Name="Controller"
+        StartCommand="%function(self)
+            if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
+                SCREENMAN:GetTopScreen():PauseGame(true)
+            end
+
+            self:queuecommand('Die')
+        end"
+        DieCommand="%function(self)
+            self:GetParent():GetChild('Die'):cmd('stop;start')
+            self:sleep(3.5)
+            self:queuecommand('GameOver')
+        end"
+        GameOverCommand="%function(self)
+            self:GetParent():GetChild('Game Over'):cmd('stop;start')
+            self:GetParent():GetChild('Display'):hidden(0)
+            self:sleep(5.5)
+            self:queuecommand('End')
+        end"
+        EndCommand="%function(self) 
+            if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
+                SCREENMAN:GetTopScreen():PauseGame(false)
+            end
+
+            self:GetParent():GetChild('Display'):hidden(1)
+        end"
+    />
+    <!-- -->
+    <Layer
+        Type="ActorSound"
+        File="Die.ogg"
+        Name="Die"
+    />
+    <Layer
+        Type="ActorSound"
+        File="Game Over.ogg"
+        Name="Game Over"
+    />
+    <Layer
+        Type="ActorFrame"
+        Name="Display"
+        InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;hidden,1"
+    ><children>
+
+        <Layer
+            Type="Quad"
+            InitCommand="zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1"
+        />
+        <Layer
+            File="death"
+        />
+
+    </children></Layer>
+
+</children></ActorFrame>

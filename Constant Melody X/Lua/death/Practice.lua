@@ -14,7 +14,7 @@ end
 function practice:Prepare() end
 
 function practice:Dead()
-        name = SCREENMAN():GetName()
+    name = SCREENMAN():GetName()
     local sounds = {
         GAMESTATE:GetFileStructure('Themes/' .. THEME:GetCurThemeName() ..
                                        '/Screens/Overlay/Death/Practice/Sound Funnies/')

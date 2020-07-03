@@ -547,7 +547,7 @@ local melody = CONSTMELODY
             end
             return t
         end,
-        FailOption_Choices = {'Off'},
+        FailOption_Choices = {'Off','Random'},
         FailOption = function()
             local t = OptionRowBase('FailOption')
             t.OneChoiceForAllPlayers = true

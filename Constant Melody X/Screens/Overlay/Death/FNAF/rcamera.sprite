@@ -1,0 +1,24 @@
+[Sprite]
+Texture=tex_camera 4x3.png
+Frame0000=10
+Delay0000=0.03
+Frame0001=9
+Delay0001=0.03
+Frame0002=8
+Delay0002=0.03
+Frame0003=7
+Delay0003=0.03
+Frame0004=6
+Delay0004=0.03
+Frame0005=5
+Delay0005=0.03
+Frame0006=4
+Delay0006=0.03
+Frame0007=3
+Delay0007=0.03
+Frame0008=2
+Delay0008=0.03
+Frame0009=1
+Delay0009=0.03
+Frame0010=0
+Delay0010=9999
