@@ -12,6 +12,7 @@
         end"
         DieCommand="%function(self)
             self:GetParent():GetChild('Die'):cmd('stop;start')
+            self:GetParent():GetChild('AFT Sprite'):queuecommand('Oof')
             self:sleep(3.5)
             self:queuecommand('GameOver')
         end"
@@ -25,10 +26,62 @@
             if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
                 SCREENMAN:GetTopScreen():PauseGame(false)
             end
-
+            self:GetParent():hidden(1)
             self:GetParent():GetChild('Display'):hidden(1)
         end"
     />
+
+    <!-- thambks sega -->
+    <Layer
+        Type="ActorFrameTexture"
+		Name="AFT"
+		OverlayReadyMessageCommand="%function(self)
+			self:SetWidth( DISPLAY:GetDisplayWidth() );
+			self:SetHeight( DISPLAY:GetDisplayHeight() );
+			self:EnableDepthBuffer( false );
+			self:EnableAlphaBuffer( true );
+			self:EnableFloat( false );
+			self:EnablePreserveTexture( true );
+			
+			self:Create();
+            self:hidden(1)
+			
+		end"
+        FreezeCommand="%function(self)
+			self:hidden(0)
+            self:sleep(0.04)
+            self:queuecommand('h')
+		end" hCommand="hidden,1"
+	/>
+    <Layer
+        Type="Quad"
+        InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1"
+    />
+	<Layer
+        Type="Sprite"
+        Texture="white"
+        Name="AFT Sprite"
+		InitCommand="aux,0"
+		OverlayReadyMessageCommand="%function(self)
+			if not FUCK_EXE then return end
+			self:SetTextureFiltering(true)
+			self:basezoomx((SCREEN_WIDTH/DISPLAY:GetDisplayWidth()));
+			self:basezoomy(-1*(SCREEN_HEIGHT/DISPLAY:GetDisplayHeight()));
+			self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y);
+			self:sleep(0.01);
+		end"
+        OofCommand="%function(self)
+            self:x(SCREEN_CENTER_X)
+			self:y(SCREEN_CENTER_Y);
+            self:sleep(0.5)
+            self:decelerate(1)
+            self:addy(-80)
+            self:accelerate(1)
+            self:y(SCREEN_HEIGHT+SCREEN_CENTER_Y)
+        end"
+	/>
+
     <!-- -->
     <Layer
         Type="ActorSound"
