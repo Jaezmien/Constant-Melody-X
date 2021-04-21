@@ -2,7 +2,6 @@
 	<ActorFrame InitCommand="%function()
 		if not Profile(0).Love then Profile(0).Love = { Color = 1 } end
 		Profile(0).Love.Dir = ThemeName()
-
 		CONSTMELODY.Chegg=false
 	end"
 	/>
@@ -139,7 +138,23 @@
 				self:queuecommand('SetTime')
 			end" OffCommand="%TitleMenuOut"
 		/>
-		<Layer Font="_equestria" Text="" Command="x,SCREEN_CENTER_X-140;y,SCREEN_CENTER_Y+140;zoom,0.6;shadowlength,1;diffusealpha,0;sleep,.3;queuecommand,Set" SetCommand="%function(self) s = SCREENMAN:GetTopScreen():GetChild('Songs'):GetText() self:settext(s) self:linear(.5) self:diffusealpha(1) Command = {} function file() if children then File=children[math.mod(table.getn(Command),table.getn(children))+1] end end end" OffCommand="%TitleMenuOut" />
+		<Layer
+			Font="_equestria"
+			Text=""
+			Command="x,SCREEN_CENTER_X-140;y,SCREEN_CENTER_Y+140;zoom,0.6;shadowlength,1;diffusealpha,0;sleep,.3;queuecommand,Set"
+			SetCommand="%function(self)
+				local s = SCREENMAN:GetTopScreen():GetChild('Songs'):GetText()
+				self:settext(s)
+				self:linear(.5)
+				self:diffusealpha(1)
+				Command = {}
+				function file()
+					if children then
+						File=children[math.mod(table.getn(Command),table.getn(children))+1]
+					end
+				end
+			end" OffCommand="%TitleMenuOut"
+		/>
 
 		<Layer Font="_equestria" Text="" Command="x,SCREEN_CENTER_X+140;y,SCREEN_CENTER_Y+140;zoom,0.6;shadowlength,1;diffusealpha,0;sleep,.3;queuecommand,Set"
 		SetCommand="%function(self) 

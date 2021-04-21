@@ -1,0 +1,146 @@
+<ActorFrame
+    Condition="CONSTMELODY.MinimumVersion('V4') and stitch('config').EnableDVD"
+
+    OverlayReadyMessageCommand="%function(self)
+        
+        local event = stitch 'lua.event'
+
+        local function timer()
+            self('Timer'):stoptweening()
+            self('Timer'):queuecommand('Reset')
+            self('Timer'):queuecommand('Time')
+        end
+
+        event.Persist('key char','dvd', function(c)
+            timer()
+        end)
+        event.Persist('key func','dvd', function(c)
+            timer()
+        end)
+        event.Persist('new screen','dvd',function(o,n)
+            --timer()
+        end)
+        timer()
+
+    end"
+><children>
+
+    <Aux
+        Name="Timer"
+        ResetCommand="%function(self)
+            self:aux(0)
+            self:GetParent():GetChild('Frame'):hidden(1)
+            self:GetParent():GetChild('Frame')('Update'):stoptweening()
+            self:GetParent():GetChild('Frame')('Update'):queuecommand('Reset')
+        end"
+        TimeCommand="sleep,60*60;queuecommand,Inactive"
+        InactiveCommand="%function(self)
+            self:aux(1)
+            self:GetParent():GetChild('Frame'):hidden(0)
+            CONSTMELODY.Garbage.DVDClock = os.clock()
+        end"
+    />
+
+    <Layer
+        Type="ActorFrame"
+        Name="Frame"
+    ><children>
+
+        <Aux
+            Name="Update"
+            ResetCommand="%function(self)
+                local aux = self:GetParent():GetChild('DVD Aux')
+                aux:xy( SCREEN_CENTER_X, SCREEN_CENTER_Y )
+                
+                aux:z( math.random(1,2) == 1 and -1 or 1 )
+                aux:aux( math.random(1,2) == 1 and -1 or 1 )
+
+                self:GetParent():GetChild('DVD Sprite'):diffusecolor(1,1,1,1)
+            end"
+            UpdateCommand="%function(self)
+                -- watch me pull this update command from thin fucking air
+
+                if self:GetParent():GetParent():GetChild('Timer'):getaux()==0 then return end
+
+                local prev_time = CONSTMELODY.Garbage.DVDClock
+                local new_time = os.clock()
+                local delta_time = (new_time - prev_time) * 60
+
+                do
+                    local dvd_width = 1118 * 0.1
+                    local dvd_height = 643 * 0.1
+
+                    local aux = self:GetParent():GetChild('DVD Aux')
+
+                    local x,y = aux:GetX(), aux:GetY()
+                    local xvel, yvel = aux:GetZ(), aux:getaux()
+
+                    x = x + (xvel * delta_time)
+                    y = y + (yvel * delta_time)
+
+                    local hit = 0
+
+                    local dvd_left = (x - (dvd_width/2))
+                    local dvd_right = (x + (dvd_width/2))
+                    local dvd_top = (y - (dvd_height/2))
+                    local dvd_bottom = (y + (dvd_height/2))
+
+                    -- Horizontal
+                    if dvd_left < 0 then
+                        x = x + math.abs( dvd_left )
+                        aux:z( 1 ); hit=hit+1
+                    elseif dvd_right > SCREEN_WIDTH then
+                        local offset = dvd_right - SCREEN_WIDTH
+                        x = x - offset
+                        aux:z( -1 ); hit=hit+1
+                    end
+                    -- Vertical
+                    if dvd_top < 0 then
+                        y = y + math.abs( dvd_top )
+                        aux:aux( 1 ); hit=hit+1
+                    elseif dvd_bottom > SCREEN_HEIGHT then
+                        local offset = dvd_bottom - SCREEN_HEIGHT
+                        y = y - offset
+                        aux:aux( -1 ); hit=hit+1
+                    end
+
+                    if hit>0 then
+                        self:GetParent():GetChild('DVD Sprite'):playcommand('ChangeColor')
+                        if hit>1 then
+                            -- GAMESTATE:Crash('you hit the corner, congrats')
+                        end
+                    end
+                    self:GetParent():GetChild('DVD Sprite'):xy( x, y )
+                    aux:xy( x, y )
+                end
+
+                CONSTMELODY.Garbage.DVDClock = os.clock()
+            end"
+        />
+
+        <Layer
+            Type="Quad"
+            InitCommand="diffuse,0,0,0,1;stretchto,0,0,SCREEN_WIDTH,SCREEN_HEIGHT"
+        />
+        <Layer
+            File="@THEME:GetPath(2,'_misc','dvd')"
+            Name="DVD Sprite"
+            InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoom,0.1"
+            ChangeColorCommand="%function(self)
+                self:diffusecolor(
+                    math.random(),
+                    math.random(),
+                    math.random(),
+                    1
+                )
+            end"
+        />
+        <Layer
+            Type="Aux"
+            Name="DVD Aux"
+            InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y"
+        />
+
+    </children></Layer>
+
+</children></ActorFrame>

@@ -24,6 +24,9 @@
         <Layer File="Pause"/>
 
         <Layer File="Scripts"/>
+
+
+        <Layer File="dvd"/>
     </children>
 	
 </ActorFrame>

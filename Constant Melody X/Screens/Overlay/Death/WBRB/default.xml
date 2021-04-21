@@ -1,4 +1,4 @@
-<ActorFrame Name="WBRB"><children>
+<ActorFrame Name="WBRB"  Condition="CONSTMELODY.MinimumVersion('V4')"><children>
 
 	<!-- very jank! might break some files -->
 

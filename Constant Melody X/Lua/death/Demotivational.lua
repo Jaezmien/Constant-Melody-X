@@ -14,6 +14,12 @@ function demotiv:Dead()
 
     local text = {
         {'What','how you fail that'},
+        {'Really','you just had to miss that arrow'},
+        {'WHAT THE FUCK','what the hell why did you miss that\narrow are you stupid what the hell'},
+        {'WHAT','HOW'},
+        {'Bruh','bruh momento numero dos'},
+        {'?','?'},
+        {'How','How did you miss that arrow are you stupid'},
     }
     local ind = math.random(1, table.getn(text))
     self:GetChild('Top'):settext( text[ind][1] )

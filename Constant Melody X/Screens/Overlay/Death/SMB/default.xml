@@ -1,7 +1,7 @@
-<ActorFrame Name="SMB"><children>
+<ActorFrame Name="SMB" Condition="CONSTMELODY.MinimumVersion('V4')"><children>
 
     <Layer
-        Type="Aux"
+        Type="Quad"
         Name="Controller"
         StartCommand="%function(self)
             if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then

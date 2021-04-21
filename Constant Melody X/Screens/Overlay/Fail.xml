@@ -14,6 +14,9 @@
                 end
             end)
         end"
+        SaltyResetMessageCommand="%function(self)
+            self:GetParent():playcommand('Reset')
+        end"
     />
 
     <Layer

@@ -128,8 +128,18 @@
 
 -- These will be the option rows available on the [nth] option screen. The 'NextScreen' row will be automatically added as long as there is more than 1 option screen.
 	playerOptions = {}
-	playerOptions[1] = { 'SpeedType','SpeedNumber','Mini','Perspective','NoteSkin','Turn','LifeBar','Compare','Rate' }
-	playerOptions[2] = { 'Turn','Accel','Scroll','Effect','Appearance','Handicap','InsertTaps','InsertOther','Hide','Ghost' }
+
+	-- Regular Mods.lua
+	-- playerOptions[1] = { 'SpeedType','SpeedNumber','Mini','Perspective','NoteSkin','Turn','LifeBar','Compare','Rate' }
+	-- playerOptions[2] = { 'Turn','Accel','Scroll','Effect','Appearance','Handicap','InsertTaps','InsertOther','Hide','Ghost' }
+
+	-- Theme.lua
+	-- playerOptions[1] = { 'SpeedType','SpeedNumber','Mini','Perspective','NoteSkin','Turn','JudgmentFont','Voice','Rate' }
+	-- playerOptions[2] = { 'Accel','Scroll','Effect','Appearance','Handicap','InsertTaps','InsertOther','Hide','Ghost','Compare','Measure','LifeBar' }
+
+	playerOptions[1] = { 'SpeedType','SpeedNumber','Mini','Perspective','NoteSkin','Turn','JudgmentFont','Compare','Voice','Rate' }
+	playerOptions[2] = { 'MetaMods1','MetaMods2','MetaMods3','Turn','Accel','Scroll','Effect','Appearance','Handicap','InsertTaps','InsertOther','Hide','Ghost','Compare','Measure','LifeBar' }
+
 	playerOptions.Edit = { 'SpeedType','SpeedNumber','Mini','Perspective','NoteSkin','Turn' }
 	ShowAllInRow = false
 
@@ -316,11 +326,12 @@ end
 
 function UpdateCompareText(pn) -- upgrade to deal with 'no maxdp' situations? Pure DP comparison or calc DP from score?
 	if judge[pn].Delay then judge[pn].Delay = nil return end -- This is used to reduce jitter caused by time quantization of ghost data for holds.
+	
 	local n = 0
-		if ModCustom.Compare[pn] == 2 then if ghost[pn].pn ~= pn then n = math.floor(ghost[pn].Score*judge[pn].MaxDP) elseif judge[pn].T == ghost[pn].T then n = ghost[pn].CurDP end end
-		if ModCustom.Compare[pn] == 3 then if ghost[pn].pn ~= 0 then n = math.floor(ghost[pn].Score*judge[pn].MaxDP) elseif judge[pn].T == ghost[pn].T then n = ghost[pn].CurDP end end
-		if ModCustom.Compare[pn] == 4 then n = judge[pn].MaxDP end
-		if (ModCustom.Compare[pn] == 5 and judge[1].T == judge[2].T) then n = judge[math.mod(pn,2) + 1].CurDP end
+	if ModCustom.Compare[pn] == 2 then if ghost[pn].pn ~= pn then n = math.floor(ghost[pn].Score*judge[pn].MaxDP) elseif judge[pn].T == ghost[pn].T then n = ghost[pn].CurDP end end
+	if ModCustom.Compare[pn] == 3 then if ghost[pn].pn ~= 0 then n = math.floor(ghost[pn].Score*judge[pn].MaxDP) elseif judge[pn].T == ghost[pn].T then n = ghost[pn].CurDP end end
+	if ModCustom.Compare[pn] == 4 then n = judge[pn].MaxDP end
+	if (ModCustom.Compare[pn] == 5 and judge[1].T == judge[2].T) then n = judge[math.mod(pn,2) + 1].CurDP end
 	if n ~= 0 then 
 		n = math.max(judge[pn].CurDP - n,GetScore(pn)*MaxDP[pn]/100-judge[pn].MaxDP) 
 		local str = (math.abs(n) > DPLimit and string.format('%+4.2f',100*n/MaxDP[pn]+0.005*n/math.abs(n)) .. '%') or string.format('%+1.0f',n) -- convert to percent if ceil positives, floor negatives.
@@ -669,7 +680,7 @@ function CaptureJudgment() for pn = 1, 2 do if Player(pn) then for i,v in ipairs
 
 function CaptureMeter()
 	for pn = 1, 2 do if Player(pn) then
-		s = GAMESTATE:GetCurrentSteps(pn-1)
+		local s = GAMESTATE:GetCurrentSteps(pn-1)
 		if s then Difficulty[pn] = s:GetDifficulty() else Difficulty[pn] = Screen():GetChild('MeterP'.. pn):GetChild('Difficulty'):GetText() end
 		for i=0,5 do if DifficultyToThemedString(i) == Difficulty[pn] or string.upper(DifficultyToThemedString(i)) == Difficulty[pn] then Difficulty[pn] = i break end end
 		Meter[pn] = Screen():GetChild('MeterP'.. pn):GetChild('Meter'):GetText()
@@ -681,9 +692,9 @@ function CaptureSteps()
 	steps = {}
 	if GAMESTATE:GetCurrentSong() then
 		steps = GAMESTATE:GetCurrentSong():GetStepsByStepsType( st )
-		t = {} -- Sorting manually. For whatever reason table.sort was returning true for a:GetMeter() == b:GetMeter() on some edits when that was NOT true. Maybe the function was too long? The length was required.
+		local t = {} -- Sorting manually. For whatever reason table.sort was returning true for a:GetMeter() == b:GetMeter() on some edits when that was NOT true. Maybe the function was too long? The length was required.
 		for n=1,table.getn(steps) do
-			m = 1
+			local m = 1
 			for i,a in ipairs(steps) do
 				local b = steps[m]
 				if a:GetDifficulty()< b:GetDifficulty() or (a:GetDifficulty() == b:GetDifficulty() and (a:GetMeter() < b:GetMeter() or (a:GetMeter() == b:GetMeter() and a:GetDescription()<b:GetDescription()))) then m = i end
@@ -744,9 +755,51 @@ end
 -- BPM format and display functions
 -------------------------------------
 
+-- Intended to be used from ScreenEvaluation.
+-- It will return a human-readable string consists of metamods and rate mods currently being used.
+-- If BitmapText is given, this function will set the string to the BitmapText.
+function SongOptionsLabel(self)
+	local t = {}
+
+	local bpm = RateBPMlabel()
+	if bpm ~= '' then table.insert(t, bpm) end
+
+	local meta = MetaModsText()
+	if meta ~= '' then table.insert(t, meta) end
+
+	s = table.concat(t, ', ')
+
+	if self then
+		self:settext(s)
+	else
+		return s
+	end
+end
+
+
 function BPMlabelRate(self)	s = AdjustedBPM() .. ' BPM ' .. RateModAppend() if self then self:settext(s) else return s end end
 function BPMandRate(self) s = AdjustedBPM() .. ' ' .. RateModAppend() if self then self:settext(s) else return s end end
 function RateBPMlabel(self) s = RateModText() if s ~= '' then s = s .. ' (' .. AdjustedBPM() .. ' BPM)' end	if self then self:settext(s) else return s end end 
+
+function MetaModsText(self)
+	mods = {}
+
+	for _, metaModsRow in ipairs(metaModsRows) do
+		for i, v in ipairs(metaModsRow.mods) do
+			if CheckMod(0, v) then
+				table.insert(mods, metaModsRow.modlist[i])
+			end
+		end
+	end
+
+	s = table.concat(mods, ', ')
+
+	if self then
+		self:settext(s)
+	else
+		return s
+	end
+end
 
 function RateModText(self) s = '' if modRate ~= 1 then s = string.format('%01.1f',modRate) .. 'x Music Rate' end if self then self:settext(s) else return s end end
 function RateModAppend(self) s = RateModText() if s ~= '' then s = '(' .. s .. ')' end if self then self:settext(s) else return s end end
@@ -788,6 +841,24 @@ end
 
 baseSpeed = { "C700", "C800", "C900", "C1000", "C1100", "C1200", "C1300", "C1400", "1x", "2x", "3x", "4x", "5x", "6x", "7x", "C400", "C500", "C600" }
 extraSpeed = { "0", "+C10", "+C20", "+C30", "+C40", "+C50", "+C60", "+C70", "+C80", "+C90", "+.75x", "+.50x", "+.25x" }
+
+metaModsRows = {
+	{
+		modlist = {'MetaFlip', 'MetaInvert', 'MetaVideogames', 'MetaMonocolumn'},
+		default = 'no metaflip, no metainvert, no metavideogames, no metamonocolumn',
+		mods = {'metaflip', 'metainvert', 'metavideogames', 'metamonocolumn'}
+	},
+	{
+		modlist = {'MetaReverse', 'MetaDizzy', 'MetaOrient', 'MetaBrake'},
+		default = 'no metareverse, no metadizzy, no metaorient, no metabrake',
+		mods = {'metareverse', 'metadizzy', 'metaorient', 'metabrake'}
+	},
+	{
+		modlist = {'MetaHidden', '50% MetaStealth'},
+		default = 'no metahidden, no metastealth',
+		mods = {'metahidden', '50% metastealth'}
+	}
+}
 
 rateMods = { "1.0x", "1.1x", "1.2x", "1.3x", "1.4x", "1.5x", "1.6x", "1.7x", "1.8x", "1.9x", "2.0x" }
 rateModsEdit = { "1.0x", "1.1x", "1.2x", "1.3x", "1.4x", "1.5x", "1.6x", "1.7x", "1.8x", "1.9x", "2.0x", "0.3x", "0.4x", "0.5x", "0.6x", "0.7x", "0.8x", "0.9x" }
@@ -845,6 +916,10 @@ ModsMaster.Rate =			{ fnctn = 'RateMods' }
 ModsMaster.RateEdit =		{ fnctn = 'RateMods', arg = 'Edit' }
 ModsMaster.SpeedBase =		{ fnctn = 'SpeedMods' }
 ModsMaster.SpeedExtra =		{ fnctn = 'SpeedMods', arg = 'Extra' }
+
+ModsMaster.MetaMods1 = 		{ fnctn = 'MetaMods1' }
+ModsMaster.MetaMods2 = 		{ fnctn = 'MetaMods2' }
+ModsMaster.MetaMods3 = 		{ fnctn = 'MetaMods3' }
 
 function OptionRowBase(name,modList)
 	local t = {
@@ -991,12 +1066,44 @@ function RateMods( s )
 	t.OneChoiceForAllPlayers = true
 	t.LoadSelections = function(self, list, pn)	for i,m in ipairs(self.Choices) do if CheckMod(pn,m..'music') then list[i] = true; s = string.gsub(m,'x','') modRate = tonumber(s) end end end
 	t.SaveSelections = function(self, list, pn)
+		local s
 		for i,m in ipairs(self.Choices) do if list[i] then s = string.gsub(m,'x',''); modRate = tonumber(s) end end
 		ApplyMod(s..'xmusic',pn+1)
 		MESSAGEMAN:Broadcast('RateModChanged')
 	end
 	return t
 end
+
+function MetaMods( s, iRow )
+	local metaModsRow = metaModsRows[ iRow ]
+	local t = OptionRowBase('MetaMods' .. iRow, metaModsRow.modlist)
+
+	t.SelectType = 'SelectMultiple'
+	t.OneChoiceForAllPlayers = true
+
+	t.LoadSelections = function(self, list, pn)
+		for i, v in ipairs(metaModsRow.mods) do
+			list[i] = CheckMod(pn, v)
+		end
+	end
+
+	t.SaveSelections = function(self, list, pn)
+		if pn ~= 0 then return end -- in OneChoiceForAllPlayers row, list in other players than player 1 is not valid
+
+		ApplyMod(metaModsRow.default, pn+1)
+		for i, v in ipairs(list) do
+			if v then
+				ApplyMod(metaModsRow.mods[i], pn+1)
+			end
+		end
+	end
+
+	return t
+end
+
+function MetaMods1( s ) return MetaMods( s, 1 ) end
+function MetaMods2( s ) return MetaMods( s, 2 ) end
+function MetaMods3( s ) return MetaMods( s, 3 ) end
 
 function NextScreenOption()
 	local t = OptionRowBase('Next Screen',{'Gameplay','Select Music','More Options'})
@@ -1141,6 +1248,7 @@ function DifficultyList()
 	local a = math.floor(r/4) + 1
 	local b = r+1-a
 	local c = math.floor(r/2) + 1
+	local q
 	if not GAMESTATE:GetCurrentSong() then
 		for pn=1,2 do
 			if Player(pn) then
@@ -1189,6 +1297,8 @@ function DifficultyListRow(self,k,t,pn)
 	local z = feetBaseZoom or (not feetBaseZoo and 1)
 	local d = {}
 	
+	local s
+
 	self:stopeffect()
 	
 	if Player(1) then d[1] = k+listPointer[1]-listPointerY[1] else d[1] = 0 end
@@ -1249,7 +1359,7 @@ function DifficultyListRow(self,k,t,pn)
 end
 
 function FixedDifficultyRows()
-	l = table.getn(steps)
+	local l = table.getn(steps)
 	if l > 5 then return false end
 	for i,v in ipairs(steps) do
 		if v:GetDifficulty() > 4 then return false end

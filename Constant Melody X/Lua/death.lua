@@ -11,17 +11,7 @@ local types = {
 }
 
 local players = 0
-
 local isReady = false
-
---function death.Next()
---    if SCREENMAN:GetTopScreen():GetName() ~= 'ScreenGameplay' then return end -- Only apply this option when we're in ScreenGameplay... Though this seems like a bad idea, since there might be files that will utilize the Action buttons.
---    current = current%#types+1
---    if types[current].Prepare then
---        types[current].Prepare(types[current].Frame)
---    end
---    SCREENMAN:SystemMessage('FailOverlay '..types[current].Name)
---end
 
 function death.Switch(n)
     current = n
@@ -45,10 +35,12 @@ function death.Trigger()
     end
 end
 
-function death:Ready()
+function death:Ready(is_reset)
+    
+    if is_reset then isReady = false end
     if isReady then return end
     isReady = true
-    d_af = self
+
     if not FUCK_EXE or not CONSTMELODY.MinimumVersion('V3.1') then self:hidden(1); return end -- Disable this if we're on OpenITG or below v3.1
     if not CONSTMELODY.Profile.Get().Options_FailOption then CONSTMELODY.Profile.Get().Options_FailOption = 1; CONSTMELODY.Profile.Set(); end
 
@@ -56,11 +48,13 @@ function death:Ready()
         local actor = self:GetChildAt(i-1)
         local name = actor:GetName()
         local style = stitch("lua.death."..name)
-        style.Name = style.Name or name
-        style.Frame = actor
-        if style.Setup then style.Setup(actor) end
-        types[i+2] = style
-        CONSTMELODY.ExtraOptions.FailOption_Choices[i+2] = style.Name
+        if style then
+            style.Name = style.Name or name
+            style.Frame = actor
+            if style.Setup then style.Setup(actor) end
+            types[i+2] = style
+            CONSTMELODY.ExtraOptions.FailOption_Choices[i+2] = style.Name
+        end
     end
 
     for i=1,2 do
@@ -82,11 +76,6 @@ function death.Start()
     if types[current].Prepare then
         types[current].Prepare(types[current].Frame)
     end
-end
-
-function death.Test()
-    death.Start()
-    death.Trigger()
 end
 
 return death

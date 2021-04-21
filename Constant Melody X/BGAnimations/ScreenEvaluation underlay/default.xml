@@ -14,17 +14,17 @@
 
 		<Layer Type="Quad"
 			OnCommand="diffuse,#1E282F;stretchto,SCREEN_CENTER_X-310,409,SCREEN_CENTER_X-5,443"
-		/>	
+		/>	<!-- 10, 409; 315, 443 = 305x46 -->
 		<Layer Type="Quad"
 			OnCommand="diffuse,#1E282F59;stretchto,SCREEN_CENTER_X-310,320,SCREEN_CENTER_X-5,409"
-		/>	
+		/>	<!-- 10, 320; 315, 409 = 305x89 -->
 	
 		<Layer Type="Quad"
 			OnCommand="diffuse,#1E282F;stretchto,SCREEN_CENTER_X-310,180,SCREEN_CENTER_X-5,355"
-		/>					
+		/> <!-- 10, 180; 315, 355 = 305x175 -->
 		<Layer Type="Quad"
 			OnCommand="diffuse,#00000077;stretchto,SCREEN_CENTER_X-310,180,SCREEN_CENTER_X-146,240"
-		/>
+		/> <!-- 10, 180; 174,240 = 164x60  -->
 	</children></ActorFrame>
 	<ActorFrame
 		Condition="GAMESTATE:IsPlayerEnabled(PLAYER_2)"

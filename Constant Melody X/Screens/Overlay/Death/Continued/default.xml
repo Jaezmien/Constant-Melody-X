@@ -1,4 +1,4 @@
-<ActorFrame Name="Continued"><children>
+<ActorFrame Name="Continued"  Condition="CONSTMELODY.MinimumVersion('V4')"><children>
 
     <Layer
         Type="ActorSound"

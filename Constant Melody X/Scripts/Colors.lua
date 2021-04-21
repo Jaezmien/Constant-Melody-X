@@ -28,12 +28,12 @@ function Color(c)
 end
 
 function FeetPosition()
-	y = 13 + 120 - 120*Color()
+	local y = 13 + 120 - 120*Color()
 	return y
 end
 
 function IconY()
-	y = 260 - 40*Color()
+	local y = 260 - 40*Color()
 	return y
 end
 

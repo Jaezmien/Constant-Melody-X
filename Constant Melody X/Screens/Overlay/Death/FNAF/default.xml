@@ -1,7 +1,8 @@
-<ActorFrame Name="FNAF"><children>
+<ActorFrame Name="FNAF" Condition="CONSTMELODY.MinimumVersion('V4')"><children>
 
 	<!-- i am easily scared, let's go make a death screen that jumpscares us! :D -->
-	<Aux
+	<Layer
+		Type="Quad"
 		Name="Controller"
 		SpookCommand="%function(self)
 			if SCREENMAN:GetTopScreen():GetName() == 'ScreenGameplay' then
@@ -16,7 +17,8 @@
 		end"
 	/>
 
-	<Aux
+	<Layer
+		Type="Quad"
 		Name="ScareUpdate"
 		UpdateCommand="%function(self)
 		

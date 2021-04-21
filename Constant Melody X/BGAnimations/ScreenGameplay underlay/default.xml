@@ -162,7 +162,7 @@
 		/>
 	</children></ActorFrame>
 	
-		<ActorFrame 
+	<ActorFrame 
 		Command="%function(self) 
 			loadMusic = 1 
 			GameplayInit(self)
@@ -215,6 +215,9 @@
 				self:queuecommand('Update')
 			end"
 			UpdateCommand="%function(self)
+				-- todo: fix this
+				-- i think its getcurrentsong:musiclengthseconds not being accurate
+				-- probably multiply by something and see if it works
 				self:cropright(1 - (GAMESTATE:GetSongTimeVisible() / GAMESTATE:GetCurrentSong():MusicLengthSeconds()) )
 				self:sleep(0.01)
 				self:queuecommand('Update')
@@ -237,6 +240,7 @@
 			File="pinkie.sprite"
 			OnCommand="%function(self)
 				self:zoom(0.5)
+				self:basezoomx(1/((SCREEN_WIDTH/SCREEN_HEIGHT)/(4/3)))
 				--
 				self:queuecommand('Update')
 			end"
@@ -336,9 +340,9 @@
 		InitCommand="x,SCREEN_CENTER_X;y,SCREEN_TOP+66;zoom,.3;shadowlength,0"
 		OnCommand="queuecommand,Update"
 		UpdateCommand="%function(self) 
-		s = modRate .. 'x'
-		if modRate == 1 then s = '' end
-		self:settext(s)
+			local s = modRate .. 'x'
+			if modRate == 1 then s = '' end
+			self:settext(s)
 		end"
 	/>
 </children> </ActorFrame>

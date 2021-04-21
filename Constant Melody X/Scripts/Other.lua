@@ -33,7 +33,7 @@ function BGShape()
 	return path
 end
 
-function DifficultyListCommand(self,t) i = self:getaux() self:y((i-1)*(19.3)) self:shadowlength(0) if t == 'meter' then self:x(-16) self:zoom(.28) else self:horizalign('left') end DifficultyListRow(self,i,t) end
+function DifficultyListCommand(self,t) local i = self:getaux() self:y((i-1)*(19.3)) self:shadowlength(0) if t == 'meter' then self:x(-16) self:zoom(.28) else self:horizalign('left') end DifficultyListRow(self,i,t) end
 
 function TitleMenuOut(self) self:sleep(.2) self:linear(.5) self:diffusealpha(0) end
 function OutCommand(self) self:linear(.5) self:diffusealpha(0) end
@@ -55,9 +55,9 @@ function TechnoPrefs()
 end
 
 function StyleIcon()
-	s = "icon " .. game .. " " .. CurStyleName()
-	path = THEME:GetPath( EC_GRAPHICS, "MenuElements" , s)
-	i = SCREENMAN:GetTopScreen():GetChild('StyleIcon')
+	local s = "icon " .. game .. " " .. CurStyleName()
+	local path = THEME:GetPath( EC_GRAPHICS, "MenuElements" , s)
+	local i = SCREENMAN:GetTopScreen():GetChild('StyleIcon')
 	i:Load(path)
 end
 	
@@ -266,16 +266,16 @@ function Get2PlayerJoinMessage()
 end
 
 function Spin(self) 
-	r = math.min(math.random(3,51),36)
-	s = math.random()*7+1 
-	z = self:GetZ();  
-	l = r/36; 
+	local r = math.min(math.random(3,51),36)
+	local s = math.random()*7+1 
+	local z = self:GetZ();  
+	local l = r/36; 
 	if z >= 36 then  
 		z = z-36
 		self:z(z)
 		self:rotationz(z*10)
 	end
-	z = z + r
+	local z = z + r
 	self:linear(l)
 	self:rotationz(z*10)
 	self:z(z)

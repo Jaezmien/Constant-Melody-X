@@ -31,6 +31,9 @@ EditorShowSongTitle=true
 EnableGameplayPause=false
 GameplayPauseKeybind='p'
 
+-- huehuehuehue
+EnableDVD=false
+
 -- Debug: Lua heap viewer
 ViewGC = false
 --[[

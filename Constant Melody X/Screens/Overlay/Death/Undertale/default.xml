@@ -1,0 +1,155 @@
+<ActorFrame Name="Undertale" Condition="CONSTMELODY.MinimumVersion('V4')"><children>
+
+    <Layer
+        Type="Quad"
+        InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,0,0,0,1"
+    />
+
+    <Layer
+        File="game_over"
+        Name="Game Over"
+        InitCommand="xy,SCREEN_CENTER_X,SCREEN_CENTER_Y;diffusealpha,0"
+        OnCommand="%function(self) self:SetTextureFiltering( false ) end"
+    />
+    <Layer
+        Type="ActorSound"
+        Name="Game Over Audio"
+        File="mus_game_over"
+    />
+
+    <!-- Dialog -->
+    <Layer
+        Type="ActorFrame"
+        Name="Dialog"
+        InitCommand="hidden,1;xy,SCREEN_CENTER_X-160,SCREEN_CENTER_Y+100;zoom,1.1"
+    ><children>
+
+        <Layer File="determinationMono24" Name="Texture" OnCommand="visible,0"/>
+        <Layer
+            Type="ActorFrame"
+            Name="Pool"
+        />
+
+        <Layer
+            Type="Aux"
+            Name="Renderer"
+        />
+
+    </children></Layer>
+
+    <!-- Heart -->
+    <Layer Type="ActorFrame" Name="Player 1"
+        OnCommand="%function(self)
+            self:hidden(1)
+            for i=1,self:GetNumChildren() do self:GetChildAt(i-1):diffuse(1,0,0,1) end
+        end"
+    ><children>
+        <Layer
+        File="soul_default"
+            Name="Heart Full"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="hidden,1;setstate,0;animate,0"
+        />
+        <Layer
+            File="soul_break"
+            Name="Heart Break"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="hidden,1"
+        />
+
+        <Layer
+            File="soul_shard"
+            Name="Shard 1"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 2"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 3"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 4"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 5"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 6"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+    </children></Layer>
+
+    <Layer Type="ActorFrame" Name="Player 2"
+        OnCommand="%function(self)
+            self:hidden(1)
+            for i=1,self:GetNumChildren() do self:GetChildAt(i-1):diffuse(0.2,0,1,1) end
+        end"
+    ><children>
+        <Layer
+        File="soul_default"
+            Name="Heart Full"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="hidden,1;setstate,0;animate,0"
+        />
+        <Layer
+            File="soul_break"
+            Name="Heart Break"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="hidden,1"
+        />
+
+        <Layer
+            File="soul_shard"
+            Name="Shard 1"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 2"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 3"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 4"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 5"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+        <Layer
+            File="soul_shard"
+            Name="Shard 6"
+            InitCommand="queuecommand,Reset"
+            ResetCommand="setstate,0;animate,0;hidden,1"
+        />
+    </children></Layer>
+
+</children></ActorFrame>

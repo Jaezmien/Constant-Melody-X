@@ -1,4 +1,4 @@
-<ActorFrame Name="Demotivational"><children>
+<ActorFrame Name="Demotivational"  Condition="CONSTMELODY.MinimumVersion('V4')"><children>
 
     <Layer
         Type="ActorSound"

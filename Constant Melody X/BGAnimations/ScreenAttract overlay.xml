@@ -20,7 +20,7 @@
 				local credits=math.floor(coins/coinsPerCredit)
 				local remainder=math.mod(coins,coinsPerCredit)
 				local s='CREDIT(S)  '
-				if credits&gt;0 then s=s..credits..'  ' end
+				if credits>0 then s=s..credits..'  ' end
 				s=s..remainder..'/'..coinsPerCredit
 				self:settext(s)
 			end"

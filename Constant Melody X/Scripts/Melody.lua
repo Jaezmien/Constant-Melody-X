@@ -132,19 +132,19 @@ local melody = CONSTMELODY
         ['V4']     = 20200112,
         ['V4.0.1'] = 20200126,
         ['V4.1']   = 20200402, -- All versions are welcome, except do_not
+		['4.2']    = 20210420, -- nice
     }
     melody.GetBuildVersion = function()
         if not FUCK_EXE then return nil end
-        local versions = {'V1','V2','V3','V3.1','V4','V4.0.1','V4.1'}
 
         local version_string = 'V1'
         local version_date = melody.BuildVersions[ version_string ]
 
-        for i,v in pairs(versions) do
-            if tonumber(GAMESTATE:GetVersionDate()) >= melody.BuildVersions[v]  then
+		for k,v in pairs(melody.BuildVersions) do
+            if tonumber(GAMESTATE:GetVersionDate()) >= v  then
                 
-                version_string = v
-                version_date = melody.BuildVersions[v]
+                version_string = k
+                version_date = v
 
             end
         end
@@ -177,6 +177,9 @@ local melody = CONSTMELODY
                 Options_EvaluationMusic=true,
                 Options_SelectMusicPony=true,
                 Options_ProgressBar=false,
+
+                -- Private
+                BorderlessWindowed=false,
             }
         end
         return melody.Profile.Profile(0).Melody
@@ -622,7 +625,7 @@ local melody = CONSTMELODY
                 melody.Profile.Get().Options_ProgressBar = list[1];
             end
             return t
-        end,
+        end
     }
 -- Break Time
     melody.BreakTime = {}
