@@ -85,7 +85,12 @@ _NotITG_Versions = {
         "BuildAddress": 0x006C5E40,
         "Address": 0x00897D10,
         "BuildDate": 20200126,
-    }
+    },
+	"V4.2": {
+		"BuildAddres": 0x006FAD40,
+		"Address": 0x008BFF38,
+		"BuildDate": 20210420
+	}
 }
 
 _NotITG_Files = {
@@ -96,7 +101,8 @@ _NotITG_Files = {
     "V3"    : "NotITG-V3.exe",      # V3
     "V3.1"  : "NotITG-V3.1.exe",    # V3.1
     "V4"    : "NotITG-V4.exe",      # V4
-    "V4.0.1": "NotITG-V4.0.1.exe",# V4.0.1
+    "V4.0.1": "NotITG-V4.0.1.exe",  # V4.0.1
+	"V4.2"  : "NotITG-V4.2.0.exe",  # V4.2
 }
 
 class NotITG:
@@ -107,9 +113,11 @@ class NotITG:
         self.details = _NotITG_Versions[ self.version ]
     
     def GetExternal(self,index = 0) -> int:
-        max_index = 63
+        max_index = 255
         if self.version == "V1" or self.version == "V2":
             max_index = 9
+		elif self.version == "V3" or self.version == "V3.1": or self.version == "V4" or self.verison == "V4.0.1":
+			max_index = 63
         if index < 0 or index > max_index:
             raise NotITGError("Index is outside range! [0-{}]".format(max_index))
         # This was a pain to find out.
@@ -118,9 +126,11 @@ class NotITG:
         ReadProcessMemory(self.k32process, self.details['Address'] + (index*4), ct.byref(data), ct.sizeof(data), ct.byref(bytesRead))
         return data.value
     def SetExternal(self, index, flag):
-        max_index = 63
+        max_index = 255
         if self.version == "V1" or self.version == "V2":
             max_index = 9
+		elif self.version == "V3" or self.version == "V3.1": or self.version == "V4" or self.verison == "V4.0.1":
+			max_index = 63
         if index < 0 or index > max_index:
             raise NotITGError("Index is outside range! [0-{}]".format(max_index))
         data = ct.c_int( flag )
