@@ -116,7 +116,7 @@ class NotITG:
 		max_index = 255
 		if self.version == "V1" or self.version == "V2":
 			max_index = 9
-		elif self.version == "V3" or self.version == "V3.1": or self.version == "V4" or self.verison == "V4.0.1":
+		elif self.version == "V3" or self.version == "V3.1" or self.version == "V4" or self.version == "V4.0.1":
 			max_index = 63
 		if index < 0 or index > max_index:
 			raise NotITGError("Index is outside range! [0-{}]".format(max_index))
@@ -129,7 +129,7 @@ class NotITG:
 		max_index = 255
 		if self.version == "V1" or self.version == "V2":
 			max_index = 9
-		elif self.version == "V3" or self.version == "V3.1": or self.version == "V4" or self.verison == "V4.0.1":
+		elif self.version == "V3" or self.version == "V3.1" or self.version == "V4" or self.version == "V4.0.1":
 			max_index = 63
 		if index < 0 or index > max_index:
 			raise NotITGError("Index is outside range! [0-{}]".format(max_index))
@@ -149,7 +149,7 @@ def Scan(known_filename = True):
 			ct_process = k32.OpenProcess(PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION, False, proc.pid)
 			if known_filename:
 				for v, file_name in _NotITG_Files.items():    
-					if proc.name() == file_name:
+					if proc.name().lower() == file_name.lower():
 						return NotITG(v, ct_process, proc.pid)
 			else:
 				# Held by duct-tape and toothpicks.
