@@ -87,7 +87,7 @@ _NotITG_Versions = {
 		"BuildDate": 20200126,
 	},
 	"V4.2": {
-		"BuildAddres": 0x006FAD40,
+		"BuildAddress": 0x006FAD40,
 		"Address": 0x008BFF38,
 		"BuildDate": 20210420
 	}
