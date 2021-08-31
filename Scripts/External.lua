@@ -2,8 +2,6 @@
 
     jaezmien's external handler v2
 
-    todo: find way to encode two letters into one number
-
 ]]
 
 local handler = {}
@@ -39,9 +37,7 @@ handler.add_buffer = function(self,id,buffer)
 
     if type(id) ~= 'number' then
         Debug('[External] Sender id must be a number.')
-    end
-    if id < 1 then
-        Debug('[External] Sender id must be greater than 0.')
+		return
     end
     local buff_length = 26
     if table.getn(buffer) > buff_length then
