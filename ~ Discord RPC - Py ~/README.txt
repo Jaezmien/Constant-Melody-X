@@ -1,12 +1,12 @@
 This theme supports Discord RPC.
 
-Make sure you have Python 3 installed.
+Make sure you have Python 3 installed. (Tested on 3.8, but anything higher than 3.6 should work)
 
 Go to this folder on cmd. And run this command to install some requirements:
 pip3 install -r requirements.txt
 
 Then just run rpc.py:
-python3 rpc.py
+python3 rpc.main.py
 
 ============================================
 Please exit the script using CTRL+C so that the game knows that the console is exiting.
