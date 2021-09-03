@@ -222,7 +222,7 @@ def tick_notitg():
 
 		if len( _notitg_write_buffer ) > 0 and NotITG.GetExternal( 56 ) == 0:
 			NotITG.SetExternal( 56, 1 )
-			write_buffer = _notitg_write_buffer.pop()
+			write_buffer = _notitg_write_buffer.pop( 0 )
 
 			for index, value in enumerate( write_buffer["buffer"] ): NotITG.SetExternal( index, value )
 			NotITG.SetExternal( 26, len(write_buffer["buffer"]) )
