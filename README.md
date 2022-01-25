@@ -2,8 +2,12 @@
  *Version 1.3*
  
 ## What?
- This is a modification of [NotITG V4.0.1's default theme](https://github.com/TaroNuke/Simply-Love-NotITG-ver.-/).
+ This is a modification of [NotITG's default theme](https://github.com/TaroNuke/Simply-Love-NotITG-ver.-/).
  You will need the theme installed for this one to work.
+
+## ⚠ The theme looks weird!
+ This might be due to the default simply love theme having different folder names (why).
+ Open `metrics.ini` and replace the `FallbackTheme` under `[Global]` to the name of the default theme's folder
 
 ## Why?
  i need more ponies in my life
