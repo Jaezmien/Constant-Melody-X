@@ -642,28 +642,28 @@ local melody = CONSTMELODY
     melody.RPC.Connected = false
     melody.RPC.UpdateScreen = function(ns)
         if ns == 'ScreenTitleMenu' then
-            External:add_buffer(1,{1,1})
+            Lemonade.Buffers:Add(1,{1,1})
         elseif ns == 'ScreenSelectMusic' then
-            External:add_buffer(1,{1,2})
+            Lemonade.Buffers:Add(1,{1,2})
         elseif ns == 'ScreenGameplay' then
-            External:add_buffer(1,{1,3})
-            local song_name = External.encode( GAMESTATE:GetCurrentSong():GetDisplayMainTitle() )
+            Lemonade.Buffers:Add(1,{1,3})
+            local song_name = Lemonade:Encode( GAMESTATE:GetCurrentSong():GetDisplayMainTitle() )
             table.insert(song_name,1,1)
             table.insert(song_name,1,2)
-            local song_folder = External.encode( GAMESTATE:GetCurrentSong():GetGroupName() )
+            local song_folder = Lemonade:Encode( GAMESTATE:GetCurrentSong():GetGroupName() )
             table.insert(song_folder,1,2)
             table.insert(song_folder,1,2)
             local song_length = {2,3,GAMESTATE:GetCurrentSong():MusicLengthSeconds()}
-            External:add_buffer(1,song_name)
-            External:add_buffer(1,song_folder)
-            External:add_buffer(1,song_length)
-            External:add_buffer(1,{2,4}) -- push
+            Lemonade.Buffers:Add(1,song_name)
+            Lemonade.Buffers:Add(1,song_folder)
+            Lemonade.Buffers:Add(1,song_length)
+            Lemonade.Buffers:Add(1,{2,4}) -- push
         elseif string.find(ns,'ScreenEvaluation') then
-            External:add_buffer(1,{1,4})
+            Lemonade.Buffers:Add(1,{1,4})
         elseif ns == 'ScreenMelodyBreakTime' then
-            External:add_buffer(1,{1,5})
+            Lemonade.Buffers:Add(1,{1,5})
         elseif ns == 'ScreenEdit' then
-            External:add_buffer(1,{1,6})
+            Lemonade.Buffers:Add(1,{1,6})
         end
     end
 -- Card Display

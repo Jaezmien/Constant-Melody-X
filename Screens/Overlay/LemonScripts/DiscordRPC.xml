@@ -1,0 +1,27 @@
+<Layer
+	Type="Quad"
+	Name="Discord RPC"
+	Condition="CONSTMELODY.MinimumVersion('V3')"
+	OverlayReadyMessageCommand="queuecommand,First"
+	FirstCommand="%function(self)
+		if DISCORD_RPC then return end DISCORD_RPC = true; -- idk it runs twice for some reason
+		local event = stitch('lua.event')
+
+		event.Persist('new screen','discord rpc',function(os,ns)
+			if not CONSTMELODY.RPC.Connected then return end
+			CONSTMELODY.RPC.UpdateScreen(ns)
+		end)
+		Lemonade.Hooks:Add(1,'init',function(buffer)
+			if buffer[1] == 0 then
+				if buffer[2] == 1 then
+					CONSTMELODY.RPC.Connected = true
+					print('Discord RPC Connected!')
+					CONSTMELODY.RPC.UpdateScreen(SCREENMAN:GetTopScreen():GetName())
+				elseif buffer[2] == 2 then
+					CONSTMELODY.RPC.Connected = false
+					print('Discord RPC Disconnected!')
+				end
+			end
+		end)
+	end"
+/>
