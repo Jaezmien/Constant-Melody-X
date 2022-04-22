@@ -636,35 +636,6 @@ local melody = CONSTMELODY
     melody.BreakTime.Paused = false
 -- Overlay
     melody.Overlay = {}
-    melody.Overlay.Last_Seen_Screen = ''
--- Discord RPC
-    melody.RPC = {}
-    melody.RPC.UpdateScreen = function(ns)
-        if ns == 'ScreenTitleMenu' then
-            Lemonade.Buffers:Add(1,{1,1})
-        elseif ns == 'ScreenSelectMusic' then
-            Lemonade.Buffers:Add(1,{1,2})
-        elseif ns == 'ScreenGameplay' then
-            Lemonade.Buffers:Add(1,{1,3})
-            local song_name = Lemonade:Encode( GAMESTATE:GetCurrentSong():GetDisplayMainTitle() )
-            table.insert(song_name,1,1)
-            table.insert(song_name,1,2)
-            local song_folder = Lemonade:Encode( GAMESTATE:GetCurrentSong():GetGroupName() )
-            table.insert(song_folder,1,2)
-            table.insert(song_folder,1,2)
-            local song_length = {2,3,GAMESTATE:GetCurrentSong():MusicLengthSeconds()}
-            Lemonade.Buffers:Add(1,song_name)
-            Lemonade.Buffers:Add(1,song_folder)
-            Lemonade.Buffers:Add(1,song_length)
-            Lemonade.Buffers:Add(1,{2,4}) -- push
-        elseif string.find(ns,'ScreenEvaluation') then
-            Lemonade.Buffers:Add(1,{1,4})
-        elseif ns == 'ScreenMelodyBreakTime' then
-            Lemonade.Buffers:Add(1,{1,5})
-        elseif ns == 'ScreenEdit' then
-            Lemonade.Buffers:Add(1,{1,6})
-        end
-    end
 -- Card Display
     melody.Card = {}
     melody.Card[1] = {}
