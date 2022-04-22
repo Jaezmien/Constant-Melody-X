@@ -639,7 +639,6 @@ local melody = CONSTMELODY
     melody.Overlay.Last_Seen_Screen = ''
 -- Discord RPC
     melody.RPC = {}
-    melody.RPC.Connected = false
     melody.RPC.UpdateScreen = function(ns)
         if ns == 'ScreenTitleMenu' then
             Lemonade.Buffers:Add(1,{1,1})

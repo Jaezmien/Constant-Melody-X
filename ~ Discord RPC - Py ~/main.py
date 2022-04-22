@@ -1,89 +1,94 @@
 import argparse
+from base64 import decode
 parser = argparse.ArgumentParser( description='Settings' )
 parser.add_argument("--unknown", "-U", dest="unknown", action="store_true", help="scans all processes instead of only relying on the filename")
+parser.add_argument("--pid", dest="pid", action="store", type=int, help="get a specific NotITG process from id")
 args = parser.parse_args()
 
+# Program ID
+APP_ID = 1
+
+# CONFIG
 import os.path
 import configparser
 
 config = configparser.ConfigParser()
 if os.path.isfile('config.ini'):
-    config.read('config.ini')
+	config.read('config.ini')
 else:
-    config['Blacklisted'] = {}
-    config['Blacklisted']['Folders'] = ''
-    config['Blacklisted']['Files'] = ''
-    with open('config.ini','w+') as f:
-        config.write(f)
+	config['Blacklisted'] = {}
+	config['Blacklisted']['Folders'] = ''
+	config['Blacklisted']['Files'] = ''
+	with open('config.ini','w+') as f:
+		config.write(f)
 
 blacklisted = {}
 blacklisted['Folders'] = config['Blacklisted']['Folders'].split(',')
 blacklisted['Files'] = config['Blacklisted']['Files'].split(',')
 
+
+# DISCORD RPC
 from pypresence import Presence
-import datetime
+CLIENTID = '445101504546734080'
 
-epoch = datetime.datetime.utcfromtimestamp(0)
-def unix_time_millis(dt):
-	return (dt - epoch).total_seconds() * 1000.0
-
-RPC = Presence( '445101504546734080' )
-rpc_nitg_version = 'v4'
+RPC = Presence(CLIENTID)
+rpc_nitg_version = 'v3'
 print('🚀  Connecting RPC...')
 RPC.connect()
 print('🚀  Connected!')
-
-# Program ID
-APP_ID = 1
-
-# A connection to NotITG is made
-def on_connect():
-	global rpc_nitg_version
-	write_to_notitg([0, 1])
-	rpc_nitg_version = 'notitg-{0}'.format( 'v3' if (NotITG.GetDetails()[ 'Version' ] in ['V3','V3.1']) else 'v4' )
-	RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(NotITG.GetDetails()[ 'Version' ]),details='Just connected')
-
-# NotITG disconnects/exits
-def on_disconnect(): pass
-# Receiving a (partial) buffer
-def on_read(buffer, setType): pass
-# Receiving full buffers
-def on_buffer_read(buffer): pass
-
-# On successful buffer write
-def on_write(buffer, setType):
-	if buffer[0] == 0 and buffer[1] == 2:
-		RPC.clear()
-		RPC.close()
-		exit( 0 )
 
 rpc_song_name = None
 rpc_folder_name = None
 rpc_length = None
 rpc_screen = None
-def on_buffer_read(buffer):
-	version = NotITG.GetDetails()[ 'Version' ]
-	state = buffer.pop(0)
+rpc_nitg_version = None
 
-	if state == 1: # Which screen
+import datetime
+epoch = datetime.datetime.utcfromtimestamp(0)
+def unix_time_millis(dt):
+	return (dt - epoch).total_seconds() * 1000.0 # https://stackoverflow.com/a/11111177
+
+# A connection to NotITG is made
+def on_connect():
+	global rpc_nitg_version
+
+	version = NotITG.GetDetails()[ "Version" ]
+	rpc_nitg_version = 'notitg-{0}'.format( 'v3' if version == 'V3' or version == 'V3.1' else 'v4' )
+	RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(version),details='Just connected')
+	write_to_notitg([1])
+
+# NotITG disconnects/exits
+def on_disconnect():
+	RPC.clear()
+
+# Receiving a (partial) buffer
+def on_read(buffer, setType):
+	pass
+
+# Receiving full buffers
+def on_buffer_read(buffer):
+	global rpc_song_name
+	global rpc_folder_name
+	global rpc_length
+	global rpc_screen
+	
+	if buffer[0]==1: ## What screen is it?
+		buffer.pop(0)
 		if buffer[0]==1:
-			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(version),state='In the title screen',start=unix_time_millis( datetime.datetime.utcnow() ))
+			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(NotITG.GetDetails()[ "Version" ]),state='In the title screen')
 		elif buffer[0]==2:
-			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(version),state='Selecting a song...',start=unix_time_millis( datetime.datetime.utcnow() ))
+			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(NotITG.GetDetails()[ "Version" ]),state='Selecting a song...')
 		elif buffer[0]==3:
 			pass # Gameplay
 		elif buffer[0]==4:
-			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(version),details='Finished a song')
+			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(NotITG.GetDetails()[ "Version" ]),state='Finished a song')
 		elif buffer[0]==5:
-			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(version),details='Taking a break...',start=unix_time_millis( datetime.datetime.utcnow() ))
+			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(NotITG.GetDetails()[ "Version" ]),state='Taking a break...',start=unix_time_millis( datetime.datetime.utcnow() ))
 		elif buffer[0]==6:
-			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(version),details='Editing a song...',start=unix_time_millis( datetime.datetime.utcnow() ))
-
-	elif state == 2: # Gameplay info
-		global rpc_song_name
-		global rpc_folder_name
-		global rpc_length
-
+			RPC.update(large_image=rpc_nitg_version,large_text='NotITG {0}'.format(NotITG.GetDetails()[ "Version" ]),state='Editing a song...',start=unix_time_millis( datetime.datetime.utcnow() ))
+		rpc_screen = buffer[0]
+	elif buffer[0]==2: ## (Gameplay) information
+		buffer.pop(0)
 		ind = buffer.pop(0)
 		if ind==1:
 			rpc_song_name = ( decode_buffer(buffer) ) # Song Name
@@ -94,25 +99,34 @@ def on_buffer_read(buffer):
 		elif ind==4:
 			rpc_start = datetime.datetime.utcnow()
 			rpc_end = rpc_start + datetime.timedelta(seconds = rpc_length)
-			RPC.update(
-				large_image=rpc_nitg_version,
-				large_text='NotITG {0}'.format(version),
-				details='Playing a song',
-				state=(None) if (rpc_song_name in blacklisted['Files']) or (rpc_folder_name in blacklisted['Folders']) else rpc_song_name,
-				start=unix_time_millis(rpc_start),
-				end=unix_time_millis(rpc_end)
-			)
+
+			if (rpc_song_name in blacklisted['Files']) or (rpc_folder_name in blacklisted['Folders']):
+				RPC.update(
+					large_image=rpc_nitg_version,
+					large_text='NotITG {0}'.format(NotITG.GetDetails()[ "Version" ]),
+					state='Playing a song',
+					start=unix_time_millis(rpc_start),
+					end=unix_time_millis(rpc_end)
+				)
+			else:
+				RPC.update(
+					large_image=rpc_nitg_version,
+					large_text='NotITG {0}'.format(NotITG.GetDetails()[ "Version" ]),
+					state='Playing a song',
+					details=rpc_song_name,
+					start=unix_time_millis(rpc_start),
+					end=unix_time_millis(rpc_end)
+				)
 			rpc_song_name = None
 			rpc_folder_name = None
 			rpc_length = None
 
+# On successful buffer write
+def on_write(buffer, setType):
+	pass
+
 # Program is exiting
 def on_exit(sig, frame):
-	global _external_initialized
-	if _external_initialized:
-		write_to_notitg([0, 2])
-		return
-	RPC.clear()
 	RPC.close()
 	exit( 0 )
 
@@ -163,7 +177,7 @@ def tick_notitg():
 	if not NotITG.Heartbeat():
 		global _heartbeat_status
 
-		if NotITG.Scan( args.unknown ):
+		if _heartbeat_status != 2 and ((args.pid and NotITG.FromProcessId(args.pid)) or NotITG.Scan( args.unknown )):
 			if NotITG.GetDetails()[ "Version" ] in ["V1", "V2"]:
 				print("⚠ Unsupported NotITG version! Expected V3 or higher, got " + NotITG.GetDetails()[ "Version" ])
 				NotITG.Disconnect()
