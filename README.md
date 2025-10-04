@@ -17,14 +17,12 @@
  2. Mid-file pausing! (Currently will break if you press `Start` to exit, use the same keybind).
  3. Break Time screen! (aka music player)
  4. ponies
- 5. ponies
- 6. ponies
- 7. more ponies
- 8. even more ponies
- 9. might want to check `Extra Options` for more, idk honestly
+ 5. more ponies
+ 6. even more ponies
+ 7. might want to check `Extra Options` for more, idk honestly
 
 ## What features does it change?
- 1. Fail overlay needs to be set up using `Options > Extra Options`.
+ 1. Fail overlay needs to be set up using `Options > Extra Options` instead of the usual keybind.
  2. 
  3. uh
 
