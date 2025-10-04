@@ -28,5 +28,5 @@
  2. 
  3. uh
 
-This theme is OpenITG & NotITG (v1 - v4.0.1) compatible.
+This theme is OpenITG & NotITG (v1 - v4.9.2) compatible.
 Certain features will be disabled, depending on what you're using.

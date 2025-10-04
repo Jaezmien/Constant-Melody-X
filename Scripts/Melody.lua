@@ -125,27 +125,41 @@ local melody = CONSTMELODY
 -- Versions
 
     melody.BuildVersions = {
-        ['V1']     = 20161226,
-        ['V2']     = 20170405,
-        ['V3']     = 20180617,
-        ['V3.1']   = 20180827,
-        ['V4']     = 20200112,
-        ['V4.0.1'] = 20200126,
-        ['V4.1']   = 20200402, -- All versions are welcome, except do_not
-		['4.2']    = 20210420, -- nice
+        {'V1',     20161226},
+        {'V2',     20170405},
+        {'V3',     20180617},
+        {'V3.1',   20180827},
+        {'V4',     20200112},
+        {'V4.0.1', 20200126},
+        {'V4.1',   20200402}, -- All versions are welcome, except do_not
+		{'V4.2',   20210420}, -- nice
+		{'V4.3',   20220925},
+		{'V4.9',   20240917},
+		{'V4.9.1', 20241010},
     }
+    melody.GetBuildDateFromString = function(build) -- OpenITG|V1|V2|V3|...
+        if not FUCK_EXE then return 0 end
+		if build == 'OpenITG' then return 0 end
+
+		for _,v in ipairs(melody.BuildVersions) do
+			if v[1] == build then return v[2] end
+        end
+
+		error(string.format('Unknown build date: %s', build))
+		return 0
+    end
     melody.GetBuildVersion = function()
         if not FUCK_EXE then return nil end
 
         local version_string = 'V1'
         local version_date = melody.BuildVersions[ version_string ]
 
-		for k,v in pairs(melody.BuildVersions) do
-            if tonumber(GAMESTATE:GetVersionDate()) >= v  then
-                
-                version_string = k
-                version_date = v
-
+		for _,v in ipairs(melody.BuildVersions) do
+			local ver = v[1]
+			local date = v[2]
+            if tonumber(GAMESTATE:GetVersionDate()) >= date then
+                version_string = ver
+                version_date = date
             end
         end
 
@@ -155,9 +169,10 @@ local melody = CONSTMELODY
         if build ~= 'OpenITG' and not FUCK_EXE then return false end
         if build == 'OpenITG' then return true end -- Only one check for OpenITG
 
-        local v_str,v_num = melody.GetBuildVersion()
+        local _,curDate = melody.GetBuildVersion()
+        local minDate = melody.GetBuildDateFromString(build)
 
-        return v_num >= melody.BuildVersions[build]
+		return curDate >= minDate
     end
 
 -- Profile
