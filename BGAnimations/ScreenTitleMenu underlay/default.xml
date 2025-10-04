@@ -107,7 +107,7 @@
 		<!--[ WITH 4TH BUTTON ]-->
 		<Z
 			Type="Quad"
-			InitCommand="diffuse,0,0,0,0.8;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+55;zoomto,SCREEN_WIDTH,150"
+			InitCommand="diffuse,0,0,0,0.8;x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y-20;zoomto,SCREEN_WIDTH,180;vertalign,top"
 			OffCommand="%TitleMenuOut"
 		/>
 		
@@ -141,7 +141,7 @@
 		<Layer
 			Font="_equestria"
 			Text=""
-			Command="x,SCREEN_CENTER_X-140;y,SCREEN_CENTER_Y+140;zoom,0.6;shadowlength,1;diffusealpha,0;sleep,.3;queuecommand,Set"
+			Command="x,SCREEN_CENTER_X-140;y,SCREEN_CENTER_Y+180;zoom,0.6;shadowlength,1;diffusealpha,0;sleep,.3;queuecommand,Set"
 			SetCommand="%function(self)
 				local s = SCREENMAN:GetTopScreen():GetChild('Songs'):GetText()
 				self:settext(s)
@@ -156,7 +156,7 @@
 			end" OffCommand="%TitleMenuOut"
 		/>
 
-		<Layer Font="_equestria" Text="" Command="x,SCREEN_CENTER_X+140;y,SCREEN_CENTER_Y+140;zoom,0.6;shadowlength,1;diffusealpha,0;sleep,.3;queuecommand,Set"
+		<Layer Font="_equestria" Text="" Command="x,SCREEN_CENTER_X+140;y,SCREEN_CENTER_Y+180;zoom,0.6;shadowlength,1;diffusealpha,0;sleep,.3;queuecommand,Set"
 		SetCommand="%function(self) 
 			local m_crashes = GetNumCrashLogs()
 			if m_crashes then self:settext('Current Errors: '..m_crashes)
