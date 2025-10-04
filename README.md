@@ -13,7 +13,7 @@
  i need more ponies in my life
 
 ## What features does it have?
- 1. RPC Support (see: `~ Discord RPC - Py ~/` for more info).
+ 1. ~~RPC Support~~ Deprecated, please use [Lemonade](https://github.com/Jaezmien/Lemonade)
  2. Mid-file pausing! (Currently will break if you press `Start` to exit, use the same keybind).
  3. Break Time screen! (aka music player)
  4. ponies
